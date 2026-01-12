@@ -23,14 +23,14 @@ public class Creature : MonoBehaviour
         
         if (logNeighbors)
         {
-            Debug.Log("found neighbors: " + DetectNearCreatures().Select(c => c.transform.name));
+            Debug.Log("found neighbors: " + DetectNearCreatures().Select(c => c.transform.name).ToArray().Length);
         }
     }
 
     private Creature[] DetectNearCreatures()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, stat.detectRange);
-        Collider2D[] creatures = hits.Where(x => x.tag == "creature").ToArray();
+        Collider2D[] creatures = hits.Where(x => x.tag.Equals("creature") && x.transform != transform).ToArray();
 
         return creatures.Select(c => c.GetComponent<Creature>()).ToArray();
         //stat.detectRange
@@ -62,7 +62,7 @@ public class Creature : MonoBehaviour
     /// </summary>
     /// <param name="others"></param>
     /// <returns></returns>
-    public Vector2 EncounterDecision(List<Creature> others)
+    public Vector2 EncounterDecision(Creature[] others)
     {
         Vector2 ret = Vector2.zero;
         foreach (Creature c in others)
@@ -79,6 +79,15 @@ public class Creature : MonoBehaviour
         }
         return ret.normalized;
     }
+
+  void OnDrawGizmos()
+  {
+    Gizmos.color = Color.white;
+    Gizmos.DrawWireSphere(transform.position, stat.detectRange);
+
+    Gizmos.color = Color.red;
+    Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + 3 * EncounterDecision(DetectNearCreatures()));
+  }
 }
 
 [Serializable]
@@ -112,6 +121,7 @@ public struct CreatureStat
     }
 }
 
+[Serializable]
 public struct EncounterDecisionWeights
 {
     // represented by vector2 [otherValue, constant]

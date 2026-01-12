@@ -1,0 +1,130 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+using UnityEngine;
+
+[RequireComponent(typeof (Collider2D))]
+public class Creature : MonoBehaviour
+{
+    public CreatureStat stat;
+
+    public float energy;
+    private float velocity;
+
+
+    [Header("Test Vars")]
+    [SerializeField] private bool logNeighbors;
+    
+    
+    private void Update()
+    {
+        
+        if (logNeighbors)
+        {
+            Debug.Log("found neighbors: " + DetectNearCreatures().Select(c => c.transform.name));
+        }
+    }
+
+    private Creature[] DetectNearCreatures()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, stat.detectRange);
+        Collider2D[] creatures = hits.Where(x => x.tag == "creature").ToArray();
+
+        return creatures.Select(c => c.GetComponent<Creature>()).ToArray();
+        //stat.detectRange
+    }
+
+    IEnumerator MoveCoroutine()
+    {
+        yield return null;
+    }
+
+    public float DotWithConstant(float[] weights, float[] values)
+    {
+        float ret = weights[weights.Length - 1];
+
+        if (weights.Length != values.Length + 1)
+        {
+            Debug.LogError("Dot Product called with incorrect Array Lengths");
+        }
+        for (int i = 0; i < values.Length; i++)
+        {
+            ret += weights[i] * values[i];
+        }
+
+        return ret;
+    }
+
+    /// <summary>
+    /// Calculates the direction that the creature will move towards
+    /// </summary>
+    /// <param name="others"></param>
+    /// <returns></returns>
+    public Vector2 EncounterDecision(List<Creature> others)
+    {
+        Vector2 ret = Vector2.zero;
+        foreach (Creature c in others)
+        {
+            Vector2 dir = (c.transform.position - transform.position).normalized;
+            float dst = Vector2.Distance(transform.position, c.transform.position);
+
+            float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {dst});
+            float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {c.stat.speed});
+            float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {c.stat.size});
+
+            Vector2 responseToC = (dstWeightedVal + speedWeightedVal + sizeWeightedVal) * dir;
+            ret += responseToC;
+        }
+        return ret.normalized;
+    }
+}
+
+[Serializable]
+public struct CreatureStat
+{
+    public float speed; // balanced by energy consumption
+
+    public float detectRange;
+    public float autogenRate; // capped at low amount
+    public float size; // balanced by energy consumption
+    public float splitThresh;
+    public float spawnDist; // balanced by flat energy cost on reproduction
+    public EncounterDecisionWeights encounterWeights;
+
+    public CreatureStat(
+        float speed,
+        float detectRange,
+        float autogen_rate,
+        float size,
+        float split_thresh,
+        float spawn_dist,
+        EncounterDecisionWeights encounterWeights
+    ) {
+        this.speed = speed;
+        this.detectRange = detectRange;
+        this.autogenRate = autogen_rate;
+        this.size = size;
+        this.splitThresh = split_thresh;
+        this.spawnDist = spawn_dist;
+        this.encounterWeights = encounterWeights;
+    }
+}
+
+public struct EncounterDecisionWeights
+{
+    // represented by vector2 [otherValue, constant]
+    public float[] speedWeights;
+    public float[] sizeWeights;
+
+    // represented by Vector2 [distance, constant]
+    public float[] distanceWeights;
+
+    public EncounterDecisionWeights(float[] speedWeights, float[] sizeWeights, float[] distanceWeights)
+    {
+        this.speedWeights = speedWeights;
+        this.sizeWeights = sizeWeights;
+        this.distanceWeights = distanceWeights;
+    }
+}

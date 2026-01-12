@@ -16,6 +16,7 @@ public class Creature : MonoBehaviour
 
     [Header("Test Vars")]
     [SerializeField] private bool logNeighbors;
+    [SerializeField] private bool showGizmos;
     
     
     private void Update()
@@ -82,11 +83,14 @@ public class Creature : MonoBehaviour
 
   void OnDrawGizmos()
   {
-    Gizmos.color = Color.white;
-    Gizmos.DrawWireSphere(transform.position, stat.detectRange);
+    if (showGizmos)
+        {
+            Gizmos.color = Color.white;
+            Gizmos.DrawWireSphere(transform.position, stat.detectRange);
 
-    Gizmos.color = Color.red;
-    Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + 3 * EncounterDecision(DetectNearCreatures()));
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + 3 * EncounterDecision(DetectNearCreatures()));
+        }
   }
 }
 

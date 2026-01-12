@@ -10,8 +10,10 @@ public class Creature : MonoBehaviour
 {
     public CreatureStat stat;
 
+    // current stats
     public float energy;
-    private float velocity;
+    private Vector2 velocity;
+    private float lastDecisionTime;
 
 
     [Header("Test Vars")]
@@ -21,11 +23,31 @@ public class Creature : MonoBehaviour
     
     private void Update()
     {
-        
+        // Debug
         if (logNeighbors)
         {
             Debug.Log("found neighbors: " + DetectNearCreatures().Select(c => c.transform.name).ToArray().Length);
         }
+
+        // Decide Direction to Move in
+        if (lastDecisionTime + GameManager.instance.creatureDecisionRefreshTime < Time.time)
+        {
+            lastDecisionTime = Time.time;
+            Creature[] neighbors = DetectNearCreatures();
+
+            if (neighbors.Length == 0)
+            {
+                // wander
+            }
+            else
+            {
+                Vector2 dir = EncounterDecision(neighbors);
+                velocity = dir * stat.speed;
+            }
+        }
+
+        // Move Creature
+        transform.Translate(velocity * Time.deltaTime);
     }
 
     private Creature[] DetectNearCreatures()
@@ -35,11 +57,6 @@ public class Creature : MonoBehaviour
 
         return creatures.Select(c => c.GetComponent<Creature>()).ToArray();
         //stat.detectRange
-    }
-
-    IEnumerator MoveCoroutine()
-    {
-        yield return null;
     }
 
     public float DotWithConstant(float[] weights, float[] values)
@@ -70,12 +87,13 @@ public class Creature : MonoBehaviour
         {
             Vector2 dir = (c.transform.position - transform.position).normalized;
             float dst = Vector2.Distance(transform.position, c.transform.position);
+            float closeness = (stat.detectRange - dst) / stat.detectRange;
 
-            float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {dst});
+            float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
             float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {c.stat.speed});
             float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {c.stat.size});
 
-            Vector2 responseToC = (dstWeightedVal + speedWeightedVal + sizeWeightedVal) * dir;
+            Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * dstWeightedVal;
             ret += responseToC;
         }
         return ret.normalized;

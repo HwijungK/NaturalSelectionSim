@@ -18,16 +18,22 @@ public class GameManager : MonoBehaviour
   public float energyAutoGenRate = 10;
   public float energyPerSpawnDst = 100;
 
+  [Header("Starting Population")]
+  public int startingPopulationSize = 5;
+  public float originalCreatureStartingEnergy = 1000;
+  public CreatureStat minStat;
+  public CreatureStat maxStat;
+
   // Logger Information
   [HideInInspector]
   public List<Creature> creatures;
-    
-    
 
   private void Awake()
   {
     if (instance != null) Destroy(this);
     else instance = this;
+
+    SpawnBatch(startingPopulationSize);
   }
   public Creature SpawnCreature(CreatureStat stat, Vector2 position, float startingEnergy)
   {
@@ -54,5 +60,37 @@ public class GameManager : MonoBehaviour
     parent.energy = startingEnergy;
     
     return SpawnCreature(childStat, spawnPosition, startingEnergy);
+  }
+
+  private void SpawnBatch(int spawnCount)
+  {
+    for (int i = 0; i < spawnCount; i++)
+    {
+      CreatureStat stat = new CreatureStat(
+        Random.Range(minStat.speed, maxStat.speed),
+        Random.Range(minStat.detectRange, maxStat.detectRange),
+        Random.Range(minStat.size, maxStat.size),
+        Random.Range(minStat.splitThresh, maxStat.splitThresh),
+        Random.Range(minStat.spawnDist, maxStat.spawnDist),
+        new EncounterDecisionWeights(
+          new float[] {
+            Random.Range(minStat.encounterWeights.speedWeights[0], maxStat.encounterWeights.speedWeights[0]),
+            Random.Range(minStat.encounterWeights.speedWeights[1], maxStat.encounterWeights.speedWeights[1])
+          },
+          new float [] {
+            Random.Range(minStat.encounterWeights.sizeWeights[0], maxStat.encounterWeights.sizeWeights[0]),
+            Random.Range(minStat.encounterWeights.sizeWeights[1], maxStat.encounterWeights.sizeWeights[1])
+          }
+        )
+      );
+
+      Vector2 position = new Vector2(Random.Range(0, width), Random.Range(0, height));
+      SpawnCreature(stat, position, originalCreatureStartingEnergy);
+    }
+  }
+
+  private void OnDrawGizmos()
+  {
+    Gizmos.DrawWireCube(new Vector2(width /2, height / 2), new Vector2(width, height  ) );
   }
 }

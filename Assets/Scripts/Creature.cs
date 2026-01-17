@@ -206,20 +206,17 @@ public struct EncounterDecisionWeights
     public float[] sizeWeights;
 
     // represented by Vector2 [distance, constant]
-    public float[] distanceWeights;
 
-    public EncounterDecisionWeights(float[] speedWeights, float[] sizeWeights, float[] distanceWeights)
+    public EncounterDecisionWeights(float[] speedWeights, float[] sizeWeights)
     {
         this.speedWeights = speedWeights;
         this.sizeWeights = sizeWeights;
-        this.distanceWeights = distanceWeights;
     }
     public EncounterDecisionWeights Mutate(float mutationPercent)
     {
         return new EncounterDecisionWeights(
             speedWeights.Select(x => x * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray(),
-            sizeWeights.Select(x => x  * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray(),
-            distanceWeights.Select(x => x * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray()
+            sizeWeights.Select(x => x  * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray()
         );
     }
 }

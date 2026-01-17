@@ -45,9 +45,12 @@ public class Creature : MonoBehaviour
                 velocity = dir * stat.speed;
             }
         }
-        energy -= stat.size * (stat.speed * stat.speed);
         // Move Creature
         transform.Translate(velocity * Time.deltaTime);
+
+        // passive energy calculation
+        energy -= stat.size * (stat.speed * stat.speed) * Time.deltaTime;
+        energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;        
     }
 
     private Creature[] DetectNearCreatures()
@@ -123,7 +126,6 @@ public struct CreatureStat
     public float speed; // balanced by energy consumption
 
     public float detectRange;
-    public float autogenRate; // capped at low amount
     public float size; // balanced by energy consumption
     public float splitThresh;
     public float spawnDist; // balanced by flat energy cost on reproduction
@@ -132,7 +134,6 @@ public struct CreatureStat
     public CreatureStat(
         float speed,
         float detectRange,
-        float autogen_rate,
         float size,
         float split_thresh,
         float spawn_dist,
@@ -140,7 +141,6 @@ public struct CreatureStat
     ) {
         this.speed = speed;
         this.detectRange = detectRange;
-        this.autogenRate = autogen_rate;
         this.size = size;
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;

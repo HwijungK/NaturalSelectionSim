@@ -45,7 +45,7 @@ public class Creature : MonoBehaviour
                 velocity = dir * stat.speed;
             }
         }
-
+        energy -= stat.size * (stat.speed * stat.speed);
         // Move Creature
         transform.Translate(velocity * Time.deltaTime);
     }
@@ -75,6 +75,20 @@ public class Creature : MonoBehaviour
         return ret;
     }
 
+    private Vector2 CalculateResponseToOther(Creature other)
+    {
+        Vector2 dir = (other.transform.position - transform.position).normalized;
+        float dst = Vector2.Distance(transform.position, other.transform.position);
+        float closeness = (stat.detectRange - dst) / stat.detectRange;
+
+        // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
+        float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {other.stat.speed});
+        float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {other.stat.size});
+
+        Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * closeness;
+        return responseToC;
+    }
+
     /// <summary>
     /// Calculates the direction that the creature will move towards
     /// </summary>
@@ -85,16 +99,7 @@ public class Creature : MonoBehaviour
         Vector2 ret = Vector2.zero;
         foreach (Creature c in others)
         {
-            Vector2 dir = (c.transform.position - transform.position).normalized;
-            float dst = Vector2.Distance(transform.position, c.transform.position);
-            float closeness = (stat.detectRange - dst) / stat.detectRange;
-
-            // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
-            float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {c.stat.speed});
-            float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {c.stat.size});
-
-            Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * closeness;
-            ret += responseToC;
+            ret += CalculateResponseToOther(c);
         }
         return ret.normalized;
     }

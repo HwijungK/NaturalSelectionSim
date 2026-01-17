@@ -13,6 +13,9 @@ public class GameManager : MonoBehaviour
     [Range (0.8f, 1.2f)]
     public float mutationRange;
 
+    [Header("World Rules")]
+    
+
     // Logger Information
     [HideInInspector]
     public List<Creature> creatures;

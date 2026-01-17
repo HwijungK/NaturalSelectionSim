@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+// using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -106,6 +107,21 @@ public class Creature : MonoBehaviour
         }
         return ret.normalized;
     }
+
+  private void OnCollisionEnter2D(Collision2D collision)
+  {
+    collision.gameObject.TryGetComponent(out Creature other);
+    if (stat.size > other.stat.size * 1.3)
+    {
+        energy += other.stat.size + other.energy;
+        Destroy(other.gameObject);
+    }
+    else if (stat.size > other.stat.size)
+    {
+        Destroy(other.gameObject);
+        Destroy(gameObject);
+    }
+  }
 
   void OnDrawGizmos()
   {

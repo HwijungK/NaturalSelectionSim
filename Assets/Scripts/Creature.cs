@@ -89,11 +89,11 @@ public class Creature : MonoBehaviour
             float dst = Vector2.Distance(transform.position, c.transform.position);
             float closeness = (stat.detectRange - dst) / stat.detectRange;
 
-            float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
+            // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
             float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {c.stat.speed});
             float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {c.stat.size});
 
-            Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * dstWeightedVal;
+            Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * closeness;
             ret += responseToC;
         }
         return ret.normalized;

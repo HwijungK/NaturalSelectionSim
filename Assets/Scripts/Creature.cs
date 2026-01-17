@@ -10,11 +10,11 @@ using UnityEngine;
 [RequireComponent(typeof (Collider2D))]
 public class Creature : MonoBehaviour
 {
-    public CreatureStat stat;
-
     // current stats
     public float energy;
     private Vector2 velocity;
+
+    public CreatureStat stat;
     private float lastDecisionTime;
 
 
@@ -51,15 +51,13 @@ public class Creature : MonoBehaviour
         transform.Translate(velocity * Time.deltaTime);
 
         // passive energy calculation
-        energy -= stat.size * (stat.speed * stat.speed) * Time.deltaTime;
+        energy -= stat.size * Mathf.Pow(velocity.magnitude, 2) * Time.deltaTime;
         energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;
 
         // Reproduction
         if (energy > stat.splitThresh)
         {
-            CreatureStat childStat = stat;
-            childStat.Mutate();
-            
+            GameManager.instance.SpawnOffspring(this);
         }  
 
         // kill creature if energy < 0:
@@ -179,9 +177,9 @@ public struct CreatureStat
         float spawn_dist,
         EncounterDecisionWeights encounterWeights
     ) {
-        this.speed = (float) math.min(0, speed);
+        this.speed = (float) math.max(0, speed);
         this.detectRange = (float) math.max(0.01, detectRange);
-        this.size = size = (float) math.min(.5, size);
+        this.size = size = (float) math.max(.5, size);
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;
         this.encounterWeights = encounterWeights;

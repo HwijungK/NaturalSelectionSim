@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public float mutationRange;
 
     [Header("World Rules")]
-    
+    public float energyAutoGenRate = 1;
 
     // Logger Information
     [HideInInspector]

@@ -52,7 +52,15 @@ public class Creature : MonoBehaviour
 
         // passive energy calculation
         energy -= stat.size * (stat.speed * stat.speed) * Time.deltaTime;
-        energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;  
+        energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;
+
+        // Reproduction
+        if (energy > stat.splitThresh)
+        {
+            CreatureStat childStat = stat;
+            childStat.Mutate();
+            
+        }  
 
         // kill creature if energy < 0:
         // create a corpse?
@@ -60,7 +68,7 @@ public class Creature : MonoBehaviour
         {
             KillSelf();
         }
-              
+
     }
 
     private Creature[] DetectNearCreatures()
@@ -178,6 +186,18 @@ public struct CreatureStat
         this.spawnDist = spawn_dist;
         this.encounterWeights = encounterWeights;
     }
+
+    public CreatureStat Mutate(float mutationPercent)
+    {
+        return new CreatureStat(
+            speed * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
+            detectRange * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
+            size * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
+            splitThresh * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
+            spawnDist * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
+            encounterWeights.Mutate(mutationPercent)
+        );
+    }
 }
 
 [Serializable]
@@ -195,5 +215,13 @@ public struct EncounterDecisionWeights
         this.speedWeights = speedWeights;
         this.sizeWeights = sizeWeights;
         this.distanceWeights = distanceWeights;
+    }
+    public EncounterDecisionWeights Mutate(float mutationPercent)
+    {
+        return new EncounterDecisionWeights(
+            speedWeights.Select(x => x * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray(),
+            sizeWeights.Select(x => x  * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray(),
+            distanceWeights.Select(x => x * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray()
+        );
     }
 }

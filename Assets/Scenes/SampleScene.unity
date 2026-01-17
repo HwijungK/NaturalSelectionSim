@@ -149,12 +149,40 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
-  creatureDecisionRefreshTime: 0.1
-  width: 100
-  height: 100
+  creatureDecisionRefreshTime: 0.5
+  width: 300
+  height: 300
   mutationRange: 0.1
   energyAutoGenRate: 10
   energyPerSpawnDst: 100
+  startingPopulationSize: 300
+  originalCreatureStartingEnergy: 1000
+  minStat:
+    speed: 0.01
+    detectRange: 0.1
+    size: 0.1
+    splitThresh: 500
+    spawnDist: 1
+    encounterWeights:
+      speedWeights:
+      - -1
+      - -1
+      sizeWeights:
+      - -1
+      - -1
+  maxStat:
+    speed: 8
+    detectRange: 40
+    size: 5
+    splitThresh: 3000
+    spawnDist: 8
+    encounterWeights:
+      speedWeights:
+      - 1
+      - 1
+      sizeWeights:
+      - 1
+      - 1
   creatures: []
 --- !u!4 &302897978
 Transform:
@@ -423,6 +451,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b17fd3cef4f4dc484d354ce49cec97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  energy: 0
   stat:
     speed: 4
     detectRange: 0
@@ -436,10 +465,6 @@ MonoBehaviour:
       sizeWeights:
       - 0.1
       - 0
-      distanceWeights:
-      - 1.85
-      - 0
-  energy: 0
   logNeighbors: 0
   showGizmos: 0
 --- !u!58 &1188709852
@@ -579,6 +604,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b17fd3cef4f4dc484d354ce49cec97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  energy: 0
   stat:
     speed: 0
     detectRange: 0
@@ -592,10 +618,6 @@ MonoBehaviour:
       sizeWeights:
       - 0.1
       - 0
-      distanceWeights:
-      - 0
-      - 0
-  energy: 0
   logNeighbors: 0
   showGizmos: 0
 --- !u!58 &1889755369
@@ -704,78 +726,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &5057243452494414745
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: energy
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: stat.splitThresh
-      value: 500
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 11.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 8.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5502700020714718170, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8719544861583463659, guid: d9aa232f110504517808235d8afd8675, type: 3}
-      propertyPath: m_Name
-      value: Creature
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d9aa232f110504517808235d8afd8675, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 619394802}
-  - {fileID: 5057243452494414745}
   - {fileID: 1188709854}
   - {fileID: 1889755371}
   - {fileID: 302897978}

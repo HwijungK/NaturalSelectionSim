@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 // using System.Drawing;
 using System.Linq;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -51,7 +52,15 @@ public class Creature : MonoBehaviour
 
         // passive energy calculation
         energy -= stat.size * (stat.speed * stat.speed) * Time.deltaTime;
-        energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;        
+        energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;  
+
+        // kill creature if energy < 0:
+        // create a corpse?
+        if (energy < 0)
+        {
+            KillSelf();
+        }
+              
     }
 
     private Creature[] DetectNearCreatures()
@@ -90,6 +99,7 @@ public class Creature : MonoBehaviour
         float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {other.stat.size});
 
         Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * closeness;
+
         return responseToC;
     }
 
@@ -114,14 +124,20 @@ public class Creature : MonoBehaviour
     if (stat.size > other.stat.size * 1.3)
     {
         energy += other.stat.size + other.energy;
-        Destroy(other.gameObject);
+        other.KillSelf();
     }
     else if (stat.size > other.stat.size)
     {
-        Destroy(other.gameObject);
-        Destroy(gameObject);
+        KillSelf();
+        other.KillSelf();
     }
   }
+
+  private void KillSelf()
+    {
+        GameManager.instance.creatures.Remove(this);
+        Destroy(gameObject);
+    }
 
   void OnDrawGizmos()
   {
@@ -155,9 +171,9 @@ public struct CreatureStat
         float spawn_dist,
         EncounterDecisionWeights encounterWeights
     ) {
-        this.speed = speed;
-        this.detectRange = detectRange;
-        this.size = size;
+        this.speed = (float) math.min(0, speed);
+        this.detectRange = (float) math.max(0.01, detectRange);
+        this.size = size = (float) math.min(.5, size);
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;
         this.encounterWeights = encounterWeights;

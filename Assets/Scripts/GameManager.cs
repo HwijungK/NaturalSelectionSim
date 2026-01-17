@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -30,6 +31,9 @@ public class GameManager : MonoBehaviour
 
   private void Awake()
   {
+    Vector2 test = new Vector2(1,1);
+    test.x *= -1;
+    print("TEST: " + test.x);
     if (instance != null) Destroy(this);
     else instance = this;
 
@@ -48,13 +52,21 @@ public class GameManager : MonoBehaviour
   {
     CreatureStat childStat = parent.stat.Mutate(mutationRange);
     Vector2 spawnPosition;
+
+    int _attemptsToSpawn = 0;
+
     do
     {
+      _attemptsToSpawn ++;
       float degree = UnityEngine.Random.Range(0, Mathf.PI * 2);
       Vector2 dir = new Vector2(Mathf.Cos(degree), Mathf.Sin(degree));
       spawnPosition = (Vector2) parent.transform.position + dir * parent.stat.spawnDist;
     }
-    while (!(0 < spawnPosition.x && spawnPosition.x < width && 0 < spawnPosition.y && spawnPosition.y < height));
+    while (!(0 < spawnPosition.x && spawnPosition.x < width && 0 < spawnPosition.y && spawnPosition.y < height) && _attemptsToSpawn < 500);
+    if (_attemptsToSpawn >= 500)
+    {
+      Debug.LogError("Parent is out of bounds as cannot spawn Offsprint");
+    }
 
     float startingEnergy = (parent.energy / 2) - energyPerSpawnDst * parent.stat.spawnDist;
     parent.energy = startingEnergy;

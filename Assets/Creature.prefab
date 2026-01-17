@@ -152,10 +152,7 @@ MonoBehaviour:
       sizeWeights:
       - -0.3
       - 1
-      distanceWeights:
-      - 5
-      - 0
-  logNeighbors: 1
+  logNeighbors: 0
   showGizmos: 1
 --- !u!50 &2723695289088253795
 Rigidbody2D:

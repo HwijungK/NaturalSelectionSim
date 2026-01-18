@@ -15,8 +15,14 @@ public class GameManager : MonoBehaviour
   [Range (0.01f, 0.10f)]
   public float mutationRange;
 
+  [Range(0.01f, 50)]
+  public float timeScale = 1f;
+
   [Header("World Rules")]
-  public float energyAutoGenRate = 10;
+  // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
+  public float maxEnergyAutoGenRate = 10;
+  public float energyGenMinSizeLim = 0.5f;
+  public float energyGenMaxSizeLim = 8;
   public float energyPerSpawnDst = 100;
 
   [Header("Starting Population")]
@@ -25,8 +31,11 @@ public class GameManager : MonoBehaviour
   public CreatureStat minStat;
   public CreatureStat maxStat;
 
+  [Header("Gizmos")]
+  public bool showGizmos = true;
+
   // Logger Information
-  [HideInInspector]
+  //[HideInInspector]
   public List<Creature> creatures;
 
   private void Awake()
@@ -39,6 +48,10 @@ public class GameManager : MonoBehaviour
 
     SpawnBatch(startingPopulationSize);
   }
+  void Update()
+  {
+    Time.timeScale = timeScale;
+  }
   public Creature SpawnCreature(CreatureStat stat, Vector2 position, float startingEnergy)
   {
     Creature c = Instantiate(creaturePrefab, position, Quaternion.identity);
@@ -47,11 +60,26 @@ public class GameManager : MonoBehaviour
     creatures.Add(c);
     return c;
   }
+  public Creature SpawnCreature(CreatureStat stat, Vector2 position, float startingEnergy, Color color)
+  {
+    Creature c = Instantiate(creaturePrefab, position, Quaternion.identity);
+    c.stat = stat;
+    c.energy = startingEnergy;
+    c.GetComponent<SpriteRenderer>().color = color;
+    creatures.Add(c);
+    return c;
+  }
 
   public Creature SpawnOffspring(Creature parent)
   {
     CreatureStat childStat = parent.stat.Mutate(mutationRange);
     Vector2 spawnPosition;
+
+    Color parentColor = parent.GetComponent<SpriteRenderer>().color;
+    float r = Mathf.Clamp(parentColor.r * (1 + Random.Range(-1f, 1f) * mutationRange), 0, 255);
+    float g = Mathf.Clamp(parentColor.g * (1 + Random.Range(-1f, 1f) * mutationRange), 0, 255);
+    float b = Mathf.Clamp(parentColor.b * (1 + Random.Range(-1f, 1f) * mutationRange), 0, 255);
+    Color childColor = new Color(r, g, b);
 
     int _attemptsToSpawn = 0;
 
@@ -71,7 +99,7 @@ public class GameManager : MonoBehaviour
     float startingEnergy = (parent.energy / 2) - energyPerSpawnDst * parent.stat.spawnDist;
     parent.energy = startingEnergy;
     
-    return SpawnCreature(childStat, spawnPosition, startingEnergy);
+    return SpawnCreature(childStat, spawnPosition, startingEnergy, childColor);
   }
 
   private void SpawnBatch(int spawnCount)
@@ -96,8 +124,9 @@ public class GameManager : MonoBehaviour
         )
       );
 
+      Color color = new(Random.Range(0f,1),Random.Range(0f,1),Random.Range(0f,1));
       Vector2 position = new Vector2(Random.Range(0, width), Random.Range(0, height));
-      SpawnCreature(stat, position, originalCreatureStartingEnergy);
+      SpawnCreature(stat, position, originalCreatureStartingEnergy, color);
     }
   }
 

@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-// using System.Drawing;
 using System.Linq;
-using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -15,16 +13,26 @@ public class Creature : MonoBehaviour
     private Vector2 velocity;
 
     public CreatureStat stat;
+    private float energyGenRate;
     private float lastDecisionTime;
-
 
     [Header("Test Vars")]
     [SerializeField] private bool logNeighbors;
-    [SerializeField] private bool showGizmos;
-    
-    
-    private void Update()
+
+    public void Start()
     {
+        // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
+        energyGenRate = Mathf.Clamp(
+            GameManager.instance.maxEnergyAutoGenRate * (Mathf.Log(stat.size / GameManager.instance.energyGenMaxSizeLim) / Mathf.Log(GameManager.instance.energyGenMinSizeLim/GameManager.instance.energyGenMaxSizeLim)),
+            0,
+            GameManager.instance.maxEnergyAutoGenRate
+        );
+    }
+
+
+  private void Update()
+    {
+
         // Debug
         if (logNeighbors)
         {
@@ -39,7 +47,10 @@ public class Creature : MonoBehaviour
 
             if (neighbors.Length == 0)
             {
-                // wander
+                if (velocity == Vector2.zero)
+                {
+                    velocity =new Vector2(UnityEngine.Random.value, UnityEngine.Random.value).normalized * stat.speed;
+                }
             }
             else
             {
@@ -60,7 +71,7 @@ public class Creature : MonoBehaviour
 
         // passive energy calculation
         energy -= stat.size * Mathf.Pow(velocity.magnitude, 2) * Time.deltaTime;
-        energy += GameManager.instance.energyAutoGenRate * Time.deltaTime;
+        energy += energyGenRate * Time.deltaTime;
 
         // Reproduction
         if (energy > stat.splitThresh)
@@ -135,12 +146,12 @@ public class Creature : MonoBehaviour
   private void OnCollisionEnter2D(Collision2D collision)
   {
     collision.gameObject.TryGetComponent(out Creature other);
-    if (stat.size > other.stat.size * 1.3)
+    if (stat.size > other.stat.size * 1.2)
     {
-        energy += other.stat.size + other.energy;
+        energy += other.stat.size + other.energy + 100;
         other.KillSelf();
     }
-    else if (stat.size > other.stat.size)
+    else if (stat.size >= other.stat.size)
     {
         KillSelf();
         other.KillSelf();
@@ -155,12 +166,12 @@ public class Creature : MonoBehaviour
 
   void OnDrawGizmos()
   {
-    if (showGizmos)
+    if (GameManager.instance.showGizmos)
         {
-            Gizmos.color = Color.white;
+            Gizmos.color = UnityEngine.Color.white;
             Gizmos.DrawWireSphere(transform.position, stat.detectRange);
 
-            Gizmos.color = Color.red;
+            Gizmos.color = UnityEngine.Color.red;
             Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + 3 * EncounterDecision(DetectNearCreatures()));
         }
   }
@@ -185,9 +196,9 @@ public struct CreatureStat
         float spawn_dist,
         EncounterDecisionWeights encounterWeights
     ) {
-        this.speed = (float) math.max(0, speed);
-        this.detectRange = (float) math.max(0.01, detectRange);
-        this.size = size = (float) math.max(.5, size);
+        this.speed = (float) Mathf.Max(0, speed);
+        this.detectRange = (float) Mathf.Max(0.01f, detectRange);
+        this.size = size = (float) Mathf.Max(.5f, size);
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;
         this.encounterWeights = encounterWeights;

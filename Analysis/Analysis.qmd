@@ -1,0 +1,39 @@
+---
+title: "Analysis"
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(gganimate)
+```
+```{r}
+# data clearning
+sim_data <- sim_data_raw %>%
+  mutate(
+    color = paste("#", color, sep = "")
+  )
+```
+
+```{r}
+population_size <- sim_data %>%
+  group_by(time) %>%
+  summarise(count = n())
+
+ggplot(data = population_size, aes(time, count)) +
+  geom_point()
+```
+```{r}
+sim_data %>% 
+  #filter(time == 6000) %>%
+  mutate(passiveEnergyChange = autoGen - energyConsumption) %>%
+  select(speed, size, passiveEnergyChange, color) %>%
+  ggplot(aes(x = speed, y =size, colour = color)) +
+    scale_color_identity() +
+    geom_point()
+```
+

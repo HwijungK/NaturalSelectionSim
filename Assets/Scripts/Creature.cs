@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -13,8 +14,17 @@ public class Creature : MonoBehaviour
     private Vector2 velocity;
 
     public CreatureStat stat;
-    private float energyGenRate;
+    public float energyGenRate {get; private set;}
+    public float energyConsumptionRate
+    {
+        get
+        {
+            return stat.size * Mathf.Pow(stat.speed, 2);
+        }
+    }
     private float lastDecisionTime;
+
+    public string color {get; private set;}
 
     [Header("Test Vars")]
     [SerializeField] private bool logNeighbors;
@@ -27,6 +37,9 @@ public class Creature : MonoBehaviour
             0,
             GameManager.instance.maxEnergyAutoGenRate
         );
+        float transform_size = Mathf.Log(stat.size / GameManager.instance.energyGenMinSizeLim, 2) + GameManager.instance.energyGenMinSizeLim;
+        transform.localScale = Vector3.one * transform_size;
+        color = GetComponent<SpriteRenderer>().color.ToHexString();
     }
 
 
@@ -146,9 +159,9 @@ public class Creature : MonoBehaviour
   private void OnCollisionEnter2D(Collision2D collision)
   {
     collision.gameObject.TryGetComponent(out Creature other);
-    if (stat.size > other.stat.size * 1.2)
+    if (stat.size > other.stat.size * 1.3)
     {
-        energy += other.stat.size + other.energy + 100;
+        energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy;
         other.KillSelf();
     }
     else if (stat.size >= other.stat.size)
@@ -215,6 +228,11 @@ public struct CreatureStat
             encounterWeights.Mutate(mutationPercent)
         );
     }
+
+    public override string ToString()
+    {
+        return String.Join(",", new string[] {speed.ToString(), detectRange.ToString(), size.ToString(), splitThresh.ToString(), spawnDist.ToString(), encounterWeights.ToString()});
+    }
 }
 
 [Serializable]
@@ -223,8 +241,6 @@ public struct EncounterDecisionWeights
     // represented by vector2 [otherValue, constant]
     public float[] speedWeights;
     public float[] sizeWeights;
-
-    // represented by Vector2 [distance, constant]
 
     public EncounterDecisionWeights(float[] speedWeights, float[] sizeWeights)
     {
@@ -237,5 +253,14 @@ public struct EncounterDecisionWeights
             speedWeights.Select(x => x * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray(),
             sizeWeights.Select(x => x  * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray()
         );
+    }
+
+    /// <summary>
+    /// returns in form: speedCoef, speedConst, sizeCoef, sizeConst
+    /// </summary>
+    /// <returns></returns>
+    public override string ToString()
+    {
+        return String.Join(",", speedWeights) + "," + String.Join(",", sizeWeights);
     }
 }

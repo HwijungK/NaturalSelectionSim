@@ -23,6 +23,7 @@ public class Creature : MonoBehaviour
         }
     }
     private float lastDecisionTime;
+    private float spawnTime;
 
     public string color {get; private set;}
 
@@ -40,6 +41,8 @@ public class Creature : MonoBehaviour
         float transform_size = Mathf.Log(stat.size / GameManager.instance.energyGenMinSizeLim, 2) + GameManager.instance.energyGenMinSizeLim;
         transform.localScale = Vector3.one * transform_size;
         color = GetComponent<SpriteRenderer>().color.ToHexString();
+
+        spawnTime = Time.time;
     }
 
 
@@ -160,7 +163,10 @@ public class Creature : MonoBehaviour
     collision.gameObject.TryGetComponent(out Creature other);
     if (stat.size > other.stat.size * 1.3)
     {
-        energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy;
+        if (Time.time > spawnTime + GameManager.instance.spawnFeedingGracePeriod)
+        {
+            energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy;
+        }
         other.KillSelf();
     }
     else if (stat.size >= other.stat.size)

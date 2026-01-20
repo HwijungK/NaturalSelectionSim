@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
   public float energyPerSpawnDst = 100;
   public float energyPerMassConversion = 100;
   public float energyLossPerMass = 3;
+  public float spawnFeedingGracePeriod = .4f; // prevents a creature from spawning and instantly feeding on the creatures it spawns on.
 
   [Header("Starting Population")]
   public int startingPopulationSize = 5;

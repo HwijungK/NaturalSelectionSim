@@ -83,7 +83,7 @@ public class Creature : MonoBehaviour
         transform.Translate(velocity * Time.deltaTime);
 
         // passive energy calculation
-        energy -= stat.size * Mathf.Pow(velocity.magnitude, 2) * Time.deltaTime;
+        energy -= (stat.size * Mathf.Pow(velocity.magnitude, 2) + stat.size * GameManager.instance.energyLossPerMass) * Time.deltaTime;
         energy += energyGenRate * Time.deltaTime;
 
         // Reproduction
@@ -93,7 +93,6 @@ public class Creature : MonoBehaviour
         }  
 
         // kill creature if energy < 0:
-        // create a corpse?
         if (energy < 0)
         {
             KillSelf();

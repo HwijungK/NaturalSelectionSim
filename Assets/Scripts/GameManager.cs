@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
   public float energyGenMaxSizeLim = 8;
   public float energyPerSpawnDst = 100;
   public float energyPerMassConversion = 100;
+  public float energyLossPerMass = 3;
 
   [Header("Starting Population")]
   public int startingPopulationSize = 5;

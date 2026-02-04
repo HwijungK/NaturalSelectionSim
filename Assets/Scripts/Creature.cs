@@ -112,8 +112,8 @@ public class Creature : MonoBehaviour
 
     private Creature[] DetectNearCreatures()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, stat.detectRange); // slightly small to account for bodies of other
-        Collider2D[] creatures = hits.Where(x => x.tag.Equals("creature") && x.transform != transform && Vector2.Distance(x.transform.position, transform.position) < stat.detectRange).ToArray();
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, stat.detectRange);
+        Collider2D[] creatures = hits.Where(x => x.tag.Equals("creature") && x.transform != transform).ToArray();
 
         return creatures.Select(c => c.GetComponent<Creature>()).ToArray();
         //stat.detectRange
@@ -138,8 +138,8 @@ public class Creature : MonoBehaviour
     private Vector2 CalculateResponseToOther(Creature other)
     {
         Vector2 dir = (other.transform.position - transform.position).normalized;
-        float dst = Vector2.Distance(transform.position, other.transform.position);
-        float closeness = Mathf.Max(stat.detectRange - dst, 0) / stat.detectRange;
+        float dst = Mathf.Min(Vector2.Distance(transform.position, other.transform.position), stat.detectRange);
+        float closeness = Mathf.Max(stat.detectRange - dst, .1f * stat.detectRange) / stat.detectRange;
 
         // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
         float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {other.stat.speed});

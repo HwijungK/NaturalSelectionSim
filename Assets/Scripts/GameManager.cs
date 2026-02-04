@@ -22,14 +22,11 @@ public class GameManager : MonoBehaviour
   public float timeScale = 1f;
 
   [Header("World Rules")]
-  // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
-  public float maxEnergyAutoGenRate = 10;
-  public float energyGenMinSizeLim = 0.5f;
-  public float energyGenMaxSizeLim = 8;
+  public float energyAutoGenRate = 2;
   public int maxSupportedLife = 5000;
+  public float minSizeLimit = 0.5f;
   public float energyPerSpawnDst = 100;
   public float energyPerMassConversion = 100;
-  public float energyLossPerMass = 3;
   public float spawnFeedingGracePeriod = .4f; // prevents a creature from spawning and instantly feeding on the creatures it spawns on.
   public float sizeThresholdToEat = 1.1f;
   public float eatBaseReward = 200f;

@@ -9,6 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof (Collider2D))]
 public class Creature : MonoBehaviour
 {
+    public float readOnlyEnergyChangeRate;
     // current stats
     public float energy;
     private Vector2 velocity;
@@ -42,12 +43,8 @@ public class Creature : MonoBehaviour
     public void Start()
     {
         // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
-        baseEnergyGenRate = Mathf.Clamp(
-            GameManager.instance.maxEnergyAutoGenRate * (Mathf.Log(stat.size / GameManager.instance.energyGenMaxSizeLim) / Mathf.Log(GameManager.instance.energyGenMinSizeLim/GameManager.instance.energyGenMaxSizeLim)),
-            0,
-            GameManager.instance.maxEnergyAutoGenRate
-        );
-        float transform_size = Mathf.Log(stat.size / GameManager.instance.energyGenMinSizeLim, 2) + GameManager.instance.energyGenMinSizeLim;
+        baseEnergyGenRate = GameManager.instance.energyAutoGenRate;
+        float transform_size = Mathf.Sqrt(stat.size);
         transform.localScale = Vector3.one * transform_size;
         color = GetComponent<SpriteRenderer>().color.ToHexString();
 
@@ -95,8 +92,9 @@ public class Creature : MonoBehaviour
         transform.Translate(velocity * Time.deltaTime);
 
         // passive energy calculation
-        energy -= (stat.size * Mathf.Pow(velocity.magnitude, 2) + stat.size * GameManager.instance.energyLossPerMass) * Time.deltaTime;
+        energy -= stat.size * Mathf.Pow(velocity.magnitude, 2) * Time.deltaTime;
         energy += realEnergyGenRate * Time.deltaTime;
+        readOnlyEnergyChangeRate = realEnergyGenRate * Time.deltaTime - (stat.size * Mathf.Pow(velocity.magnitude, 2));
 
         // Reproduction
         if (energy > stat.splitThresh)
@@ -225,7 +223,7 @@ public struct CreatureStat
     ) {
         this.speed = (float) Mathf.Max(0, speed);
         this.detectRange = (float) Mathf.Max(0.01f, detectRange);
-        this.size = (float) Mathf.Max(GameManager.instance.energyGenMinSizeLim, size);
+        this.size = (float) Mathf.Max(GameManager.instance.minSizeLimit, size);
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;
         this.encounterWeights = encounterWeights;

@@ -49,6 +49,7 @@ public class Logger : MonoBehaviour
     {
         if (Time.time > _nextLogTime)
         {
+            print(_nextLogTime);
             LogToFile();
             _nextLogTime += timeBetweenLogs;
         }
@@ -61,7 +62,11 @@ public class Logger : MonoBehaviour
             // outputFile.Write(String.Join(',', new String[] {"" +_nextLogTime.ToString("F2"), "" + _creatures.Count}) + '\n');
             foreach (Creature c in GameManager.instance.creatures)
             {
-                outputFile.WriteLine(_nextLogTime.ToString("F1") + "," + c.transform.position.x + "," + c.transform.position.y + "," + c.stat.ToString() + "," + c.energyGenRate + "," + c.energyConsumptionRate + "," + c.color);
+                if (c != null)
+                {
+                    outputFile.WriteLine(_nextLogTime.ToString("F1") + "," + c.transform.position.x + "," + c.transform.position.y + "," + c.stat.ToString() + "," + c.realEnergyGenRate + "," + c.energyConsumptionRate + "," + c.color);
+                    
+                }
             }
         }
     }

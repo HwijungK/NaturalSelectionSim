@@ -138,6 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b17fd3cef4f4dc484d354ce49cec97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  energy: 1000
   stat:
     speed: 5
     detectRange: 20
@@ -151,12 +152,8 @@ MonoBehaviour:
       sizeWeights:
       - -0.3
       - 1
-      distanceWeights:
-      - 5
-      - 0
-  energy: 1000
-  logNeighbors: 1
-  showGizmos: 1
+  showGizmos: 0
+  logNeighbors: 0
 --- !u!50 &5817253224064532619
 Rigidbody2D:
   serializedVersion: 5

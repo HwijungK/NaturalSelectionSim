@@ -14,7 +14,14 @@ public class Creature : MonoBehaviour
     private Vector2 velocity;
 
     public CreatureStat stat;
-    public float energyGenRate {get; private set;}
+    public float baseEnergyGenRate {get; private set;}
+    public float realEnergyGenRate {
+        get
+        {
+            return baseEnergyGenRate * (1 - (GameManager.instance.creatures.Count / GameManager.instance.maxSupportedLife));
+        }
+        private set{ }
+    }
     public float energyConsumptionRate
     {
         get
@@ -27,13 +34,15 @@ public class Creature : MonoBehaviour
 
     public string color {get; private set;}
 
+    [SerializeField] private bool showGizmos;
+
     [Header("Test Vars")]
     [SerializeField] private bool logNeighbors;
 
     public void Start()
     {
         // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
-        energyGenRate = Mathf.Clamp(
+        baseEnergyGenRate = Mathf.Clamp(
             GameManager.instance.maxEnergyAutoGenRate * (Mathf.Log(stat.size / GameManager.instance.energyGenMaxSizeLim) / Mathf.Log(GameManager.instance.energyGenMinSizeLim/GameManager.instance.energyGenMaxSizeLim)),
             0,
             GameManager.instance.maxEnergyAutoGenRate
@@ -87,7 +96,7 @@ public class Creature : MonoBehaviour
 
         // passive energy calculation
         energy -= (stat.size * Mathf.Pow(velocity.magnitude, 2) + stat.size * GameManager.instance.energyLossPerMass) * Time.deltaTime;
-        energy += energyGenRate * Time.deltaTime;
+        energy += realEnergyGenRate * Time.deltaTime;
 
         // Reproduction
         if (energy > stat.splitThresh)
@@ -105,8 +114,8 @@ public class Creature : MonoBehaviour
 
     private Creature[] DetectNearCreatures()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, stat.detectRange);
-        Collider2D[] creatures = hits.Where(x => x.tag.Equals("creature") && x.transform != transform).ToArray();
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, stat.detectRange); // slightly small to account for bodies of other
+        Collider2D[] creatures = hits.Where(x => x.tag.Equals("creature") && x.transform != transform && Vector2.Distance(x.transform.position, transform.position) < stat.detectRange).ToArray();
 
         return creatures.Select(c => c.GetComponent<Creature>()).ToArray();
         //stat.detectRange
@@ -132,7 +141,7 @@ public class Creature : MonoBehaviour
     {
         Vector2 dir = (other.transform.position - transform.position).normalized;
         float dst = Vector2.Distance(transform.position, other.transform.position);
-        float closeness = (stat.detectRange - dst) / stat.detectRange;
+        float closeness = Mathf.Max(stat.detectRange - dst, 0) / stat.detectRange;
 
         // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
         float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {other.stat.speed});
@@ -161,11 +170,11 @@ public class Creature : MonoBehaviour
   private void OnCollisionEnter2D(Collision2D collision)
   {
     collision.gameObject.TryGetComponent(out Creature other);
-    if (stat.size > other.stat.size * 1.3)
+    if (stat.size > other.stat.size * GameManager.instance.sizeThresholdToEat)
     {
-        if (Time.time > spawnTime + GameManager.instance.spawnFeedingGracePeriod)
+        if (Time.time > spawnTime + GameManager.instance.spawnFeedingGracePeriod && Time.time > other.spawnTime + GameManager.instance.spawnFeedingGracePeriod / 3)
         {
-            energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy;
+            energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy + GameManager.instance.eatBaseReward;
         }
         other.KillSelf();
     }
@@ -184,7 +193,7 @@ public class Creature : MonoBehaviour
 
   void OnDrawGizmos()
   {
-    if (GameManager.instance.showGizmos)
+    if (GameManager.instance.showGizmos || showGizmos)
         {
             Gizmos.color = UnityEngine.Color.white;
             Gizmos.DrawWireSphere(transform.position, stat.detectRange);
@@ -216,7 +225,7 @@ public struct CreatureStat
     ) {
         this.speed = (float) Mathf.Max(0, speed);
         this.detectRange = (float) Mathf.Max(0.01f, detectRange);
-        this.size = size = (float) Mathf.Max(.5f, size);
+        this.size = (float) Mathf.Max(GameManager.instance.energyGenMinSizeLim, size);
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;
         this.encounterWeights = encounterWeights;
@@ -255,8 +264,8 @@ public struct EncounterDecisionWeights
     public EncounterDecisionWeights Mutate(float mutationPercent)
     {
         return new EncounterDecisionWeights(
-            speedWeights.Select(x => x * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray(),
-            sizeWeights.Select(x => x  * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f))).ToArray()
+            speedWeights.Select(x => Mathf.Clamp(x + mutationPercent * UnityEngine.Random.Range(-1f, 1f),-1, 1)).ToArray(),
+            sizeWeights.Select(x => Mathf.Clamp(x + mutationPercent * UnityEngine.Random.Range(-1f, 1f), -1, 1)).ToArray()
         );
     }
 

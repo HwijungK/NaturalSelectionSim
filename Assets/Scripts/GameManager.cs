@@ -3,6 +3,7 @@ using JetBrains.Annotations;
 using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.TextCore;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,10 +13,12 @@ public class GameManager : MonoBehaviour
   [Header("global settings")]
   public float creatureDecisionRefreshTime;
   public float width, height;
-  [Range (0.01f, 0.10f)]
+  [Range (0.01f, 0.20f)]
   public float mutationRange;
+  [Tooltip("Increase or decrease the mutation of the color of creatures")]
+  public float colorMutationMultiplier = 1.5f;
 
-  [Range(0.01f, 50)]
+  [Range(0.01f, 80)]
   public float timeScale = 1f;
 
   [Header("World Rules")]
@@ -23,10 +26,13 @@ public class GameManager : MonoBehaviour
   public float maxEnergyAutoGenRate = 10;
   public float energyGenMinSizeLim = 0.5f;
   public float energyGenMaxSizeLim = 8;
+  public int maxSupportedLife = 5000;
   public float energyPerSpawnDst = 100;
   public float energyPerMassConversion = 100;
   public float energyLossPerMass = 3;
   public float spawnFeedingGracePeriod = .4f; // prevents a creature from spawning and instantly feeding on the creatures it spawns on.
+  public float sizeThresholdToEat = 1.1f;
+  public float eatBaseReward = 200f;
 
   [Header("Starting Population")]
   public int startingPopulationSize = 5;
@@ -79,10 +85,16 @@ public class GameManager : MonoBehaviour
     Vector2 spawnPosition;
 
     Color parentColor = parent.GetComponent<SpriteRenderer>().color;
-    float r = Mathf.Clamp(parentColor.r * (1 + Random.Range(-1f, 1f) * mutationRange), 0, 255);
-    float g = Mathf.Clamp(parentColor.g * (1 + Random.Range(-1f, 1f) * mutationRange), 0, 255);
-    float b = Mathf.Clamp(parentColor.b * (1 + Random.Range(-1f, 1f) * mutationRange), 0, 255);
-    Color childColor = new Color(r, g, b);
+    Color.RGBToHSV(parentColor, out float ph, out float ps, out float pv);
+    float h = Mathf.Clamp(ph + (1 * Random.Range(-1f, 1f) * colorMutationMultiplier * mutationRange), 0, 1);
+    float s = Mathf.Clamp(ps + (1 * Random.Range(-1f, 1f) * colorMutationMultiplier * mutationRange),.4f, 1);
+    float v = Mathf.Clamp(pv + (1 * Random.Range(-1f, 1f) * colorMutationMultiplier * mutationRange),.6f, 1);
+
+
+    // float r = Mathf.Clamp(parentColor.r + (parentColor.r * Random.Range(-1f, 1f) * mutationRange * colorMutationMultiplier), 0, 255);
+    // float g = Mathf.Clamp(parentColor.g + (parentColor.g * Random.Range(-1f, 1f) * mutationRange * colorMutationMultiplier), 0, 255);
+    // float b = Mathf.Clamp(parentColor.b + (parentColor.b * Random.Range(-1f, 1f) * mutationRange * colorMutationMultiplier), 0, 255);
+    Color childColor = Color.HSVToRGB(h, s, v);
 
     int _attemptsToSpawn = 0;
 
@@ -127,7 +139,7 @@ public class GameManager : MonoBehaviour
         )
       );
 
-      Color color = new(Random.Range(0f,1),Random.Range(0f,1),Random.Range(0f,1));
+      Color color = Color.HSVToRGB(Random.Range(0f,1),Random.Range(.40f,1),Random.Range(.5f, 1));
       Vector2 position = new Vector2(Random.Range(0, width), Random.Range(0, height));
       SpawnCreature(stat, position, originalCreatureStartingEnergy, color);
     }

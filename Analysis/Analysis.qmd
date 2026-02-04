@@ -15,9 +15,29 @@ library(gganimate)
 # data clearning
 sim_data <- sim_data_raw %>%
   mutate(
-    color = paste("#", color, sep = "")
+    color = paste("#", color, sep = ""),
+    passiveEnergyChange = autoGen - energyConsumption
   )
+
+sim_data <- sim_data %>% filter(color != "#")
 ```
+
+```{r}
+plot_theme <- theme(
+      panel.background = element_rect(fill = 'black'),
+      panel.grid = element_line(colour = 'grey20'),
+      aspect.ratio = 1,
+      title = element_text(size = 14, family = 'mono')
+    )
+
+plot_theme_light <- theme(
+      panel.background = element_rect(fill = 'white'),
+      panel.grid = element_line(colour = 'grey90'),
+      panel.border = element_rect(colour = 'grey80'),
+      title = element_text(size = 14, family = 'mono'),
+    )
+```
+
 
 ```{r}
 population_size <- sim_data %>%
@@ -25,15 +45,91 @@ population_size <- sim_data %>%
   summarise(count = n())
 
 ggplot(data = population_size, aes(time, count)) +
-  geom_point()
+  geom_line() +
+  labs(title = "Total creature count by time") +
+  plot_theme_light
 ```
+
 ```{r}
-sim_data %>% 
-  #filter(time == 6000) %>%
+anim_length = 20
+plot_data <- sim_data %>%
+  filter(time %% 40 == 0) %>%
   mutate(passiveEnergyChange = autoGen - energyConsumption) %>%
-  select(speed, size, passiveEnergyChange, color) %>%
+  select(time, speed, size, passiveEnergyChange, color)
+
+nframes <- length(unique(plot_data$time))
+fps <- round(nframes / anim_length)
+p1 <- plot_data %>% 
   ggplot(aes(x = speed, y =size, colour = color)) +
     scale_color_identity() +
-    geom_point()
+    scale_x_log10() +
+    scale_y_log10() +
+    geom_point() +
+    plot_theme + 
+    labs(title = "Time: {round(frame_time, 0)}", x = 'speed', y = 'size') +
+    transition_time(time) +
+    ease_aes('linear')
+
+animate(p1, width = 800, height = 800, nframes = nframes, fps = fps)
+anim_save('plot_speed_size_sped');
 ```
+
+
+```{r}
+sim_data %>% 
+  mutate(passiveEnergyChange = autoGen - energyConsumption) %>%
+  filter(time > 12000) %>%
+  select(time, speed, size, passiveEnergyChange, energyConsumption, autoGen, color) %>%
+  ggplot(aes(x = speed, y =size, colour = passiveEnergyChange)) +
+    geom_point() +
+    scale_colour_gradient2(
+      low = 'red',
+      mid = 'white',
+      high = 'green',
+      midpoint = 0
+    ) +
+    plot_theme
+
+ggsave("plot_passive_energy_with_low_split_threshold.png")
+```
+```{r}
+sim_data %>%
+  filter(time > 10000 & time %% 500 == 0) %>%
+  ggplot(aes(x = speed, y = size, color = splitThresh)) +
+  geom_point() +
+  labs(title = "Energy before reproduction increases as size increases") +
+  plot_theme_light
+```
+```{r}
+sim_data %>%
+  filter(time == 12000) %>%
+  ggplot(aes(x = speed, y = detectRange)) +
+  geom_point() +
+  labs(title = "Detection Range Increases with Speed") +
+  geom_smooth(method = 'lm') +
+  plot_theme_light
+```
+```{r}
+sim_data %>%
+  filter(time %% 100 == 0) %>%
+  group_by(time, type =ifelse(passiveEnergyChange < 0, "heterotroph", 'autotroph')) %>%
+  summarise(meanDetectRange = mean(detectRange)) %>%
+  ggplot(aes(x = time, y = meanDetectRange, color = type)) +
+  geom_point() +
+  labs(title = "Detection Range Increases with Speed") +
+  plot_theme_light
+```
+
+```{r}
+sim_data %>%
+  filter(time %% 100 == 0) %>%
+  group_by(time, type =ifelse(passiveEnergyChange < 0, "heterotroph", 'autotroph')) %>%
+  summarise(meanSplitThresh = mean(splitThresh)) %>%
+  ggplot(aes(x = time, y = meanSplitThresh, color = type)) +
+  geom_point() +
+  labs(title = "Split Threshold") +
+  plot_theme_light
+```
+
+
 

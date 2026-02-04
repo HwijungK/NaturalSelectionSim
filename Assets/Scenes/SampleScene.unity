@@ -155,7 +155,8 @@ MonoBehaviour:
   mutationRange: 0.12
   colorMutationMultiplier: 0.6
   timeScale: 24
-  energyAutoGenRate: 1.4
+  energyAutoGenRate: 3
+  homeostasisConstant: 0.7
   maxSupportedLife: 4000
   minSizeLimit: 0.5
   energyPerSpawnDst: 20

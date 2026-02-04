@@ -17,11 +17,12 @@ public class Creature : MonoBehaviour
     private Vector2 velocity;
 
     public CreatureStat stat;
-    public float baseEnergyGenRate {get; private set;}
+
+    
     public float realEnergyGenRate {
         get
         {
-            return baseEnergyGenRate * (1 - (GameManager.instance.creatures.Count / GameManager.instance.maxSupportedLife));
+            return GameManager.instance.energyAutoGenRate * (1 - (GameManager.instance.creatures.Count / GameManager.instance.maxSupportedLife));
         }
         private set{ }
     }
@@ -29,7 +30,7 @@ public class Creature : MonoBehaviour
     {
         get
         {
-            return stat.size * Mathf.Pow(stat.speed, 2);
+            return stat.size * Mathf.Pow(stat.speed, 2) + GameManager.instance.homeostasisConstant * Mathf.Pow(stat.size, 0.75f);
         }
     }
     private float lastDecisionTime;
@@ -46,8 +47,7 @@ public class Creature : MonoBehaviour
     public void Start()
     {
         // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
-        baseEnergyGenRate = GameManager.instance.energyAutoGenRate;
-        transformSize = Mathf.Sqrt(stat.size);
+        transformSize = Mathf.Pow(stat.size, GameManager.instance.transformSizePower);
         color = GetComponent<SpriteRenderer>().color.ToHexString();
 
         spawnTime = Time.time;
@@ -95,9 +95,9 @@ public class Creature : MonoBehaviour
         transform.Translate(velocity * Time.deltaTime);
 
         // passive energy calculation
-        energy -= stat.size * Mathf.Pow(velocity.magnitude, 2) * Time.deltaTime;
+        energy -= energyConsumptionRate * Time.deltaTime;
         energy += realEnergyGenRate * Time.deltaTime;
-        readOnlyEnergyChangeRate = realEnergyGenRate * Time.deltaTime - (stat.size * Mathf.Pow(velocity.magnitude, 2));
+        readOnlyEnergyChangeRate = realEnergyGenRate - energyConsumptionRate;
 
         // Reproduction
         if (energy > stat.splitThresh)

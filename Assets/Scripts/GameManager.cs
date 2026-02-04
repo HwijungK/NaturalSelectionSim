@@ -18,13 +18,16 @@ public class GameManager : MonoBehaviour
   [Tooltip("Increase or decrease the mutation of the color of creatures")]
   public float colorMutationMultiplier = 1.5f;
 
-  [Range(0.01f, 120)]
+  [Range(0.01f, 99)]
   public float timeScale = 1f;
 
   [Header("World Rules")]
   public float energyAutoGenRate = 2;
+  public float homeostasisConstant = .7f;
   public int maxSupportedLife = 5000;
   public float minSizeLimit = 0.5f;
+  [Range(0, 2)]
+  public float transformSizePower = .8f;
   public float energyPerSpawnDst = 100;
   public float energyPerMassConversion = 100;
   public float spawnFeedingGracePeriod = .4f; // prevents a creature from spawning and instantly feeding on the creatures it spawns on.

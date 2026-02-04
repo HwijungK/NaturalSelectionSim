@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
   [Tooltip("Increase or decrease the mutation of the color of creatures")]
   public float colorMutationMultiplier = 1.5f;
 
-  [Range(0.01f, 80)]
+  [Range(0.01f, 120)]
   public float timeScale = 1f;
 
   [Header("World Rules")]
@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
   public float spawnFeedingGracePeriod = .4f; // prevents a creature from spawning and instantly feeding on the creatures it spawns on.
   public float sizeThresholdToEat = 1.1f;
   public float eatBaseReward = 200f;
+  public float growShrinkTime = 5f;
 
   [Header("Starting Population")]
   public int startingPopulationSize = 5;
@@ -108,7 +109,7 @@ public class GameManager : MonoBehaviour
       Debug.LogError("Parent is out of bounds as cannot spawn Offsprint");
     }
 
-    float startingEnergy = (parent.energy / 2) - energyPerSpawnDst * parent.stat.spawnDist;
+    float startingEnergy = (parent.energy/ 2) - energyPerSpawnDst * parent.stat.spawnDist;
     parent.energy = startingEnergy;
     
     return SpawnCreature(childStat, spawnPosition, startingEnergy, childColor);

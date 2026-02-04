@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
-[RequireComponent(typeof (Collider2D))]
+// [RequireComponent(typeof (Collider2D))]
 public class Creature : MonoBehaviour
 {
     public float readOnlyEnergyChangeRate;
@@ -32,7 +34,8 @@ public class Creature : MonoBehaviour
     }
     private float lastDecisionTime;
     private float spawnTime;
-
+    private float transformSize;
+    Coroutine growCoroutine;
     public string color {get; private set;}
 
     [SerializeField] private bool showGizmos;
@@ -44,11 +47,11 @@ public class Creature : MonoBehaviour
     {
         // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
         baseEnergyGenRate = GameManager.instance.energyAutoGenRate;
-        float transform_size = Mathf.Sqrt(stat.size);
-        transform.localScale = Vector3.one * transform_size;
+        transformSize = Mathf.Sqrt(stat.size);
         color = GetComponent<SpriteRenderer>().color.ToHexString();
 
         spawnTime = Time.time;
+        growCoroutine = StartCoroutine(Grow());
     }
 
 
@@ -183,11 +186,38 @@ public class Creature : MonoBehaviour
     }
   }
 
-  private void KillSelf()
+    private void KillSelf()
     {
         GameManager.instance.creatures.Remove(this);
+        StopCoroutine(growCoroutine);
+        GetComponent<Collider2D>().enabled = false;
+        StartCoroutine(Shrink());
+        //Destroy(gameObject);
+    }
+
+    IEnumerator Shrink()
+    {
+        float startTime = Time.time;
+        float endTime = Time.time + GameManager.instance.growShrinkTime;
+        while (Time.time < endTime)
+        {
+            transform.localScale = Vector3.one * Mathf.Lerp(transformSize, 0, (Time.time - startTime) / (endTime - startTime));
+            yield return new WaitForSeconds(1f);
+        }
         Destroy(gameObject);
     }
+    IEnumerator Grow()
+    {
+        float startTime = Time.time;
+        float endTime = Time.time + GameManager.instance.growShrinkTime;
+        while (Time.time < endTime)
+        {
+            transform.localScale = Vector3.one * Mathf.Lerp(0, transformSize, (Time.time - startTime) / (endTime - startTime));
+            yield return new WaitForSeconds(1f);
+        }
+        transform.localScale = Vector3.one * transformSize;
+    }
+    
 
   void OnDrawGizmos()
   {

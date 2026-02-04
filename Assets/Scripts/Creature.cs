@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -17,7 +18,7 @@ public class Creature : MonoBehaviour
     private Vector2 velocity;
 
     public CreatureStat stat;
-
+    private bool alive = true;
     
     public float realEnergyGenRate {
         get
@@ -57,7 +58,7 @@ public class Creature : MonoBehaviour
 
   private void Update()
     {
-
+        if (!alive) return;
         // Debug
         if (logNeighbors)
         {
@@ -188,11 +189,19 @@ public class Creature : MonoBehaviour
 
     private void KillSelf()
     {
+        alive = false;
         GameManager.instance.creatures.Remove(this);
         StopCoroutine(growCoroutine);
         GetComponent<Collider2D>().enabled = false;
-        StartCoroutine(Shrink());
-        //Destroy(gameObject);
+        if (transform.localScale.x > GameManager.instance.prettyShrinkSizeThresh)
+        {
+            StartCoroutine(Shrink());
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        
     }
 
     IEnumerator Shrink()
@@ -221,7 +230,7 @@ public class Creature : MonoBehaviour
 
   void OnDrawGizmos()
   {
-    if (GameManager.instance.showGizmos || showGizmos)
+    if (GameManager.instance.showGizmos || showGizmos || Selection.activeGameObject == gameObject)
         {
             Gizmos.color = UnityEngine.Color.white;
             Gizmos.DrawWireSphere(transform.position, stat.detectRange);

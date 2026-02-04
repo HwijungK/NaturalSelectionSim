@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
   public float sizeThresholdToEat = 1.1f;
   public float eatBaseReward = 200f;
   public float growShrinkTime = 5f;
+  public float prettyShrinkSizeThresh = 2f;
 
   [Header("Starting Population")]
   public int startingPopulationSize = 5;
@@ -57,6 +58,11 @@ public class GameManager : MonoBehaviour
     else instance = this;
 
     SpawnBatch(startingPopulationSize);
+  }
+  private void Start()
+  {
+    Camera.main.orthographicSize = height / 2;
+    Camera.main.transform.position = new(height * 8 / 9, height / 2, -10);
   }
   void Update()
   {

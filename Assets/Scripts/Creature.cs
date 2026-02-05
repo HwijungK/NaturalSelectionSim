@@ -49,6 +49,7 @@ public class Creature : MonoBehaviour
     {
         // energy gen = clamp{maxEnergyAutoGenRate * (log(size/max_size)) / log(s_min/size_max), 0, maxEnergyAutoGenRate}
         transformSize = Mathf.Pow(stat.size, GameManager.instance.transformSizePower);
+
         color = GetComponent<SpriteRenderer>().color.ToHexString();
 
         spawnTime = Time.time;

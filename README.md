@@ -1,6 +1,7 @@
 # NaturalSelectionSim
 ---
 Simulating natural selection and speciation
+!["Colonies of small creatures developing"](/Screenshots/small_cultures.png)
 
 # Table of Contents
 1. Introduction

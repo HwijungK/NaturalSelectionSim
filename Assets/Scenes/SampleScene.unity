@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 302897978}
   - component: {fileID: 302897977}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: SimManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -149,21 +149,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
-  creatureDecisionRefreshTime: 2.28
-  width: 213.33333
-  height: 120
-  mutationRange: 0.2
-  colorMutationMultiplier: 0.6
-  timeScale: 61.9
-  energyAutoGenRate: 3
-  homeostasisConstant: 0
-  maxSupportedLife: 4000
-  minSizeLimit: 0.5
-  transformSizePower: 0.3
-  energyPerSpawnDst: 20
-  energyPerMassConversion: 100
-  spawnFeedingGracePeriod: 20
-  sizeThresholdToEat: 1.5
+  creatureDecisionRefreshTime: 2
+  width: 320
+  height: 180
+  mutationRange: 0.1
+  colorMutationMultiplier: 0.3
+  timeScale: 50
+  energyAutoGenRate: 4
+  homeostasisConstant: 0.5
+  maxSupportedLife: 8000
+  minSizeLimit: 1
+  transformSizePower: 0.4
+  energyPerSpawnDst: 100
+  energyPerMassConversion: 300
+  spawnFeedingGracePeriod: 10
+  sizeThresholdToEat: 1.05
   eatBaseReward: 0
   growShrinkTime: 5
   prettyShrinkSizeThresh: 2
@@ -617,9 +617,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: Code/Unity_Projects/NaturalSelectionSim/Data
-  fileName: data_1-27-750
+  fileName: data_3_24
   overwriteFile: 1
-  timeBetweenLogs: 20
+  timeBetweenLogs: 100
 --- !u!4 &1786506891
 Transform:
   m_ObjectHideFlags: 0

@@ -70,13 +70,13 @@ pops_long <- populations %>%
 
 ggplot(data = population_size, aes(time, count)) +
   geom_line() +
-  # xlim(c(0,35000)) +
+  xlim(c(0,35000)) +
   labs(title = "Total creature count by time") +
   plot_theme_light
   
 ggplot(data = pops_long, aes(time, count, colour = role)) +
   geom_line() +
-  # xlim(c(0,40000)) +
+  xlim(c(0,40000)) +
   scale_y_log10() +
   labs(title = "Population by Role in Community over Time")
 ```
@@ -106,81 +106,9 @@ anim_save('plot_speed_size_sped');
 ```
 
 ```{r}
-anim_length = 40
-plot_data <- sim_data %>%
-  filter(time %% 200 == 0) %>%
-  mutate(passiveEnergyChange = autoGen - energyConsumption,
-         role = ifelse(passiveEnergyChange > 0, "consumer", "producer")) %>%
-  select(time, speed, size, passiveEnergyChange, color, role)
-
-nframes <- length(unique(plot_data$time))
-fps <- round(nframes / anim_length)
-p1 <- plot_data %>% 
-  ggplot(aes(x = speed, y =size, colour = role)) +
-    scale_x_log10() +
-    scale_y_log10() +
-    geom_point() +
-    plot_theme + 
-    labs(title = "Time: {round(frame_time, 0)}", x = 'speed', y = 'size') +
-    transition_time(time) +
-    ease_aes('linear')
-
-animate(p1, width = 800, height = 800, nframes = nframes, fps = fps)
-anim_save('plot_speed_size_sped');
-```
-
-```{r}
-anim_length = 30
-plot_data <- sim_data %>%
-  filter(time %% 200 == 0) %>%
-  mutate(passiveEnergyChange = autoGen - energyConsumption) %>%
-  select(time, speed, size, passiveEnergyChange, color)
-
-nframes <- length(unique(plot_data$time))
-fps <- round(nframes / anim_length)
-p1 <- plot_data %>% 
-  ggplot(aes(x = speed, y =size)) +
-    scale_color_identity() +
-    scale_x_log10() +
-    scale_y_log10() +
-    geom_bin_2d(bins = 50,aes(fill = after_stat(count))) +
-    plot_theme_light + 
-    scale_fill_viridis_b() + 
-    labs(title = "Time: {round(frame_time, 0)}", x = 'speed', y = 'size') +
-    transition_time(time) +
-    ease_aes('linear')
-
-animate(p1, width = 800, height = 800, nframes = nframes, fps = fps)
-anim_save('plot_speed_size_sped');
-```
-
-```{r}
-anim_length = 80
-plot_data <- sim_data %>%
-  filter(time %% 100 == 0) %>%
-  mutate(passiveEnergyChange = autoGen - energyConsumption) %>%
-  select(time, speed, size, passiveEnergyChange, color)
-
-nframes <- length(unique(plot_data$time))
-fps <- round(nframes / anim_length)
-p1 <- plot_data %>% 
-  ggplot(aes(x = size)) +
-    geom_histogram() +
-    scale_y_continuous(transform = scales::log_trans(base = 2)) +
-    xlim(c(0, 30)) + 
-    plot_theme_light + 
-    labs(title = "Time: {round(frame_time, 0)}", x = 'size', y = 'frq') +
-    transition_time(time) +
-    ease_aes('linear')
-
-animate(p1, width = 800, height = 800, nframes = nframes, fps = fps)
-# anim_save('plot_speed_size_sped');
-```
-
-```{r}
 sim_data %>% 
   mutate(passiveEnergyChange = autoGen - energyConsumption) %>%
-  filter(time > 10000) %>%
+  filter(time > 12000) %>%
   select(time, speed, size, passiveEnergyChange, energyConsumption, autoGen, color) %>%
   ggplot(aes(x = speed, y =size, colour = passiveEnergyChange)) +
     geom_point() +
@@ -197,31 +125,20 @@ ggsave("plot_passive_energy_with_low_split_threshold.png")
 
 ```{r}
 sim_data %>%
-  filter(time > 50000 & time %% 500 == 0) %>%
-  ggplot(aes(x = speed, y = size, z = splitThresh)) +
-  stat_summary_2d(
-    aes(fill = after_stat(value)),
-    fun = mean
-  ) +
-  scale_fill_viridis_b() +
-  labs(
-    title = "Average splitThresh across speed and size",
-    fill = "Mean splitThresh"
-  ) +
+  filter(time > 10000 & time %% 500 == 0) %>%
+  ggplot(aes(x = speed, y = size, color = splitThresh)) +
+  geom_point() +
+  labs(title = "Energy before reproduction increases as size increases") +
   plot_theme_light
 ```
 
 ```{r}
 sim_data %>%
-  filter(time > 50000 & time < 60000 & time %% 1000 == 0) %>%
-  ggplot(aes(x = speed, y = size, z = ifelse(passiveEnergyChange > 0, 0, 1))) +
-  stat_summary_2d(
-    aes(fill = after_stat(value)),
-    fun = mean
-  ) +
-  scale_x_log10() +
-  scale_y_log10() + 
-  labs(title = "Detection Range Vs Speed") +
+  filter(time == 12000) %>%
+  ggplot(aes(x = speed, y = detectRange)) +
+  geom_point() +
+  labs(title = "Detection Range Increases with Speed") +
+  geom_smooth(method = 'lm') +
   plot_theme_light
 ```
 
@@ -267,3 +184,4 @@ sim_data %>%
   labs(title = "Speed of Consumers and Producers over Time") +
   plot_theme_light
 ```
+

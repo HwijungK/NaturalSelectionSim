@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using NUnit.Framework.Internal;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -19,7 +20,7 @@ public class Creature : MonoBehaviour
     public float readOnlySpeedPer;
     // current stats
     public float energy;
-    private Vector2 velocity;
+    public Vector2 velocity {get; private set;}
 
     public CreatureStat stat;
     private bool alive = true;
@@ -35,7 +36,7 @@ public class Creature : MonoBehaviour
     {
         get
         {
-            return stat.size * Mathf.Pow(rb.linearVelocity.magnitude, 2) + GameManager.instance.homeostasisConstant * Mathf.Pow(stat.size, 0.75f);
+            return stat.size * Mathf.Pow(velocity.magnitude, 2) + GameManager.instance.homeostasisConstant * Mathf.Pow(stat.size, 0.75f);
         }
     }
     private float lastDecisionTime;
@@ -43,8 +44,6 @@ public class Creature : MonoBehaviour
     private float transformSize;
     Coroutine growCoroutine;
     public string color {get; private set;}
-    private Rigidbody2D rb;
-    private Vector2 _dir;
 
     [SerializeField] private bool showGizmos;
 
@@ -61,7 +60,6 @@ public class Creature : MonoBehaviour
         spawnTime = Time.time;
         growCoroutine = StartCoroutine(Grow());
 
-        rb = GetComponent<Rigidbody2D>();
     }
 
 
@@ -80,25 +78,9 @@ public class Creature : MonoBehaviour
             lastDecisionTime = Time.time;
             Creature[] neighbors = DetectNearCreatures();
             (Vector2 dir, float percentMaxSpeed) = stat.nNet.Predict(this, neighbors.ToList());
-            _dir = dir;
             velocity = dir * percentMaxSpeed * stat.speed;
 
-            // if (neighbors.Length == 0)
-            // {
-            //     if (velocity == Vector2.zero)
-            //     {
-            //         velocity = new Vector2(UnityEngine.Random.value, UnityEngine.Random.value).normalized * percentMaxSpeed * stat.speed;
-            //     }
-            //     else
-            //     {
-            //         velocity = GetComponent<Rigidbody2D>().linearVelocity.normalized * percentMaxSpeed * stat.speed;
-            //     }
-            // }
-            // else
-            // {
-            //     velocity = dir * stat.speed * percentMaxSpeed;
-            // }
-            readOnlySpeedPer = percentMaxSpeed;
+            readOnlySpeedPer = velocity.magnitude;
         }
         // Move Creature
         if (transform.position.x + transform.localScale.x / 2 < 0)
@@ -148,51 +130,51 @@ public class Creature : MonoBehaviour
         //stat.detectRange
     }
 
-    public float DotWithConstant(float[] weights, float[] values)
-    {
-        float ret = weights[weights.Length - 1];
+    // public float DotWithConstant(float[] weights, float[] values)
+    // {
+    //     float ret = weights[weights.Length - 1];
 
-        if (weights.Length != values.Length + 1)
-        {
-            Debug.LogError("Dot Product called with incorrect Array Lengths");
-        }
-        for (int i = 0; i < values.Length; i++)
-        {
-            ret += weights[i] * values[i];
-        }
+    //     if (weights.Length != values.Length + 1)
+    //     {
+    //         Debug.LogError("Dot Product called with incorrect Array Lengths");
+    //     }
+    //     for (int i = 0; i < values.Length; i++)
+    //     {
+    //         ret += weights[i] * values[i];
+    //     }
 
-        return ret;
-    }
+    //     return ret;
+    // }
 
-    private Vector2 CalculateResponseToOther(Creature other)
-    {
-        Vector2 dir = (other.transform.position - transform.position).normalized;
-        float dst = Mathf.Min(Vector2.Distance(transform.position, other.transform.position), stat.detectRange);
-        float closeness = Mathf.Max(stat.detectRange - dst, .1f * stat.detectRange) / stat.detectRange;
+    // private Vector2 CalculateResponseToOther(Creature other)
+    // {
+    //     Vector2 dir = (other.transform.position - transform.position).normalized;
+    //     float dst = Mathf.Min(Vector2.Distance(transform.position, other.transform.position), stat.detectRange);
+    //     float closeness = Mathf.Max(stat.detectRange - dst, .1f * stat.detectRange) / stat.detectRange;
 
-        // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
-        float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {other.stat.speed});
-        float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {other.stat.size});
+    //     // float dstWeightedVal = DotWithConstant(stat.encounterWeights.distanceWeights, new float[] {closeness});
+    //     float speedWeightedVal = DotWithConstant(stat.encounterWeights.speedWeights, new float[] {other.stat.speed});
+    //     float sizeWeightedVal = DotWithConstant(stat.encounterWeights.sizeWeights, new float[] {other.stat.size});
 
-        Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * closeness;
+    //     Vector2 responseToC = (speedWeightedVal + sizeWeightedVal) * dir * closeness;
 
-        return responseToC;
-    }
+    //     return responseToC;
+    // }
 
     /// <summary>
     /// Calculates the direction that the creature will move towards
     /// </summary>
     /// <param name="others"></param>
     /// <returns></returns>
-    public Vector2 EncounterDecision(Creature[] others)
-    {
-        Vector2 ret = Vector2.zero;
-        foreach (Creature c in others)
-        {
-            ret += CalculateResponseToOther(c);
-        }
-        return ret.normalized;
-    }
+    // public Vector2 EncounterDecision(Creature[] others)
+    // {
+    //     Vector2 ret = Vector2.zero;
+    //     foreach (Creature c in others)
+    //     {
+    //         ret += CalculateResponseToOther(c);
+    //     }
+    //     return ret.normalized;
+    // }
 
   private void OnCollisionEnter2D(Collision2D collision)
   {
@@ -201,7 +183,7 @@ public class Creature : MonoBehaviour
     {
         if (Time.time > spawnTime + GameManager.instance.spawnFeedingGracePeriod && Time.time > other.spawnTime + GameManager.instance.spawnFeedingGracePeriod / 3)
         {
-            energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy + GameManager.instance.eatBaseReward;
+            energy += other.stat.size * GameManager.instance.energyPerMassConversion + other.energy * GameManager.instance.energyConsumptionTransferRate + GameManager.instance.eatBaseReward;
         }
         other.KillSelf();
     }
@@ -261,7 +243,7 @@ public class Creature : MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, stat.detectRange);
 
             Gizmos.color = UnityEngine.Color.red;
-            Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + _dir * stat.detectRange * readOnlySpeedPer);
+            Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + velocity.normalized * stat.detectRange * readOnlySpeedPer);
         }
   }
 }
@@ -275,8 +257,7 @@ public struct CreatureStat
     public float size; // balanced by energy consumption
     public float splitThresh;
     public float spawnDist; // balanced by flat energy cost on reproduction
-    public EncounterDecisionWeights encounterWeights;
-
+    // public EncounterDecisionWeights encounterWeights;
     public NNet nNet;
 
     public CreatureStat(
@@ -285,7 +266,7 @@ public struct CreatureStat
         float size,
         float split_thresh,
         float spawn_dist,
-        EncounterDecisionWeights encounterWeights,
+        // EncounterDecisionWeights encounterWeights,
         NNet nNet
     ) {
         this.speed = (float) Mathf.Max(0, speed);
@@ -293,7 +274,7 @@ public struct CreatureStat
         this.size = (float) Mathf.Max(GameManager.instance.minSizeLimit, size);
         this.splitThresh = split_thresh;
         this.spawnDist = spawn_dist;
-        this.encounterWeights = encounterWeights;
+        // this.encounterWeights = encounterWeights;
         this.nNet = nNet;
     }
 
@@ -305,43 +286,43 @@ public struct CreatureStat
             size * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
             splitThresh * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
             spawnDist * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
-            encounterWeights.Mutate(mutationPercent),
+            // encounterWeights.Mutate(mutationPercent),
             new NNet(nNet, mutationPercent)
         );
     }
 
     public override string ToString()
     {
-        return String.Join(",", new string[] {speed.ToString(), detectRange.ToString(), size.ToString(), splitThresh.ToString(), spawnDist.ToString(), encounterWeights.ToString()});
+        return String.Join(",", new string[] {speed.ToString(), detectRange.ToString(), size.ToString(), splitThresh.ToString(), spawnDist.ToString()});
     }
 }
 
-[Serializable]
-public struct EncounterDecisionWeights
-{
-    // represented by vector2 [otherValue, constant]
-    public float[] speedWeights;
-    public float[] sizeWeights;
+// [Serializable]
+// public struct EncounterDecisionWeights
+// {
+//     // represented by vector2 [otherValue, constant]
+//     public float[] speedWeights;
+//     public float[] sizeWeights;
 
-    public EncounterDecisionWeights(float[] speedWeights, float[] sizeWeights)
-    {
-        this.speedWeights = speedWeights;
-        this.sizeWeights = sizeWeights;
-    }
-    public EncounterDecisionWeights Mutate(float mutationPercent)
-    {
-        return new EncounterDecisionWeights(
-            speedWeights.Select(x => Mathf.Clamp(x + mutationPercent * UnityEngine.Random.Range(-1f, 1f),-1, 1)).ToArray(),
-            sizeWeights.Select(x => Mathf.Clamp(x + mutationPercent * UnityEngine.Random.Range(-1f, 1f), -1, 1)).ToArray()
-        );
-    }
+//     public EncounterDecisionWeights(float[] speedWeights, float[] sizeWeights)
+//     {
+//         this.speedWeights = speedWeights;
+//         this.sizeWeights = sizeWeights;
+//     }
+//     public EncounterDecisionWeights Mutate(float mutationPercent)
+//     {
+//         return new EncounterDecisionWeights(
+//             speedWeights.Select(x => Mathf.Clamp(x + mutationPercent * UnityEngine.Random.Range(-1f, 1f),-1, 1)).ToArray(),
+//             sizeWeights.Select(x => Mathf.Clamp(x + mutationPercent * UnityEngine.Random.Range(-1f, 1f), -1, 1)).ToArray()
+//         );
+//     }
 
-    /// <summary>
-    /// returns in form: speedCoef, speedConst, sizeCoef, sizeConst
-    /// </summary>
-    /// <returns></returns>
-    public override string ToString()
-    {
-        return String.Join(",", speedWeights) + "," + String.Join(",", sizeWeights);
-    }
-}
+//     /// <summary>
+//     /// returns in form: speedCoef, speedConst, sizeCoef, sizeConst
+//     /// </summary>
+//     /// <returns></returns>
+//     public override string ToString()
+//     {
+//         return String.Join(",", speedWeights) + "," + String.Join(",", sizeWeights);
+//     }
+// }

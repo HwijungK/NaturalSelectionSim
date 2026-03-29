@@ -5,17 +5,16 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-
 public class NNet
 {
-  static int BASE_INPUT = 1;
+  static int BASE_INPUT = 2;
   static int INPUT_PER_OTHER = 6;
 
   private int maxDetectCount;
   private int hiddenLayerCount; // number of hidden layers
   private int[] hiddenLayerNodeCount; // number of nodes in each hidden layer
-  private float[][,] weights; 
-  private float[][] biases;
+  [SerializeField] private float[][,] weights; 
+  public float[][] biases;
   
   public NNet(int maxDetectCount, int[] hiddenLayerNodeCount)
   {
@@ -62,7 +61,7 @@ public class NNet
         {
           weights[i][r,c] = Mathf.Clamp(from.weights[i][r,c] + UnityEngine.Random.Range(-mutationPercent, mutationPercent), -1f, 1f);
         }
-        biases[i][r] = Mathf.Clamp(from.biases[i][r] + UnityEngine.Random.Range(-mutationPercent, mutationPercent), -1f, 1f);
+        biases[i][r] = Mathf.Clamp(from.biases[i][r] + UnityEngine.Random.Range(-mutationPercent * .3f, mutationPercent * .3f), -1f, 1f);
       }
     }
   }
@@ -103,6 +102,7 @@ public class NNet
 
     // Populate Base_inputs
     ret[0] = self.energy / self.stat.splitThresh;
+    ret[1] = Mathf.Atan2(self.velocity.x, self.velocity.y) / (2*Mathf.PI) + Mathf.PI;
 
     System.Random rnd = new System.Random();
 
@@ -114,7 +114,7 @@ public class NNet
       Color.RGBToHSV(other.GetComponent<SpriteRenderer>().color, out float hue, out float s, out float v);
       // Color, other's movement direction, size, speed, direction to other, distance from other
       ret[i * INPUT_PER_OTHER + BASE_INPUT] = hue; // Color
-      ret[i*INPUT_PER_OTHER + BASE_INPUT + 1] = (Vector2.Dot(other.GetComponent<Rigidbody2D>().linearVelocity.normalized, ((Vector2) (self.transform.position - other.transform.position)).normalized) / 2) + 0.5f; // Whether the other creature is moving towards self 
+      ret[i*INPUT_PER_OTHER + BASE_INPUT + 1] = (Vector2.Dot(other.velocity.normalized, ((Vector2) (self.transform.position - other.transform.position)).normalized) / 2) + 0.5f; // Whether the other creature is moving towards self 
       ret[i * INPUT_PER_OTHER + BASE_INPUT + 2] = 1 - Mathf.Pow(.5f, (other.stat.size / self.stat.size)); // Size difference from 0 to 1 with 0.5 meaning they are the same size
       ret[i * INPUT_PER_OTHER + BASE_INPUT + 3] = 1 - Mathf.Pow(.5f, (other.stat.speed / self.stat.speed)); // Speed different between 0 to 1 with 0.5 meaning they are the same speed
       ret[i * INPUT_PER_OTHER + BASE_INPUT + 4] = Vector2.SignedAngle(Vector2.down, other.transform.position - self.transform.position) / 360 + .5f; // angle towards other, with 0 being up, going clockwise
@@ -162,6 +162,6 @@ public class NNet
   }
   private float Sigmoid(float a)
   {
-    return 1 / (1 + Mathf.Pow(2.71f, -a));
+    return 1 / (1 + Mathf.Pow(1.6f, -a));
   }
 }

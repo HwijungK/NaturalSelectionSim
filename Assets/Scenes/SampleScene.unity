@@ -149,29 +149,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
-  creatureDecisionRefreshTime: 2
+  creatureDecisionRefreshTime: 8
   width: 320
   height: 180
-  mutationRange: 0.1
-  colorMutationMultiplier: 0.3
-  timeScale: 50
-  energyAutoGenRate: 4
-  homeostasisConstant: 0.5
+  mutationRange: 0.137
+  colorMutationMultiplier: 0.5
+  timeScale: 92.6
+  energyAutoGenRate: 5
+  homeostasisConstant: 0.8
   maxSupportedLife: 8000
   minSizeLimit: 1
-  transformSizePower: 0.4
+  transformSizePower: 0.5
   energyPerSpawnDst: 100
-  energyPerMassConversion: 300
-  spawnFeedingGracePeriod: 10
-  sizeThresholdToEat: 1.05
+  energyPerMassConversion: 250
+  spawnFeedingGracePeriod: 20
+  sizeThresholdToEat: 1.25
   eatBaseReward: 0
   growShrinkTime: 5
   prettyShrinkSizeThresh: 2
-  startingPopulationSize: 600
+  startingPopulationSize: 300
   originalCreatureStartingEnergy: 700
   minStat:
     speed: 0.01
-    detectRange: 0.1
+    detectRange: 4
     size: 0.1
     splitThresh: 500
     spawnDist: 3
@@ -185,7 +185,7 @@ MonoBehaviour:
   maxStat:
     speed: 3.5
     detectRange: 20
-    size: 10
+    size: 6
     splitThresh: 7000
     spawnDist: 9
     encounterWeights:
@@ -465,6 +465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   readOnlyEnergyChangeRate: 0
+  readOnlySpeedPer: 0
   energy: 0
   stat:
     speed: 4
@@ -667,6 +668,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   readOnlyEnergyChangeRate: 0
+  readOnlySpeedPer: 0
   energy: 0
   stat:
     speed: 0
@@ -789,6 +791,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2109798105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2109798106}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2109798106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109798105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2, y: 0.9, z: -0.8255934}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -799,3 +832,4 @@ SceneRoots:
   - {fileID: 1889755371}
   - {fileID: 302897978}
   - {fileID: 1786506891}
+  - {fileID: 2109798106}

@@ -33,6 +33,8 @@ public class GameManager : MonoBehaviour
   public float spawnFeedingGracePeriod = .4f; // prevents a creature from spawning and instantly feeding on the creatures it spawns on.
   public float sizeThresholdToEat = 1.1f;
   public float eatBaseReward = 200f;
+  [Range(0f, 1f)]
+  public float energyConsumptionTransferRate = 0.5f;
   public float growShrinkTime = 5f;
   public float prettyShrinkSizeThresh = 2f;
 
@@ -134,17 +136,17 @@ public class GameManager : MonoBehaviour
         Random.Range(minStat.size, maxStat.size),
         Random.Range(minStat.splitThresh, maxStat.splitThresh),
         Random.Range(minStat.spawnDist, maxStat.spawnDist),
-        new EncounterDecisionWeights(
-          new float[] {
-            Random.Range(minStat.encounterWeights.speedWeights[0], maxStat.encounterWeights.speedWeights[0]),
-            Random.Range(minStat.encounterWeights.speedWeights[1], maxStat.encounterWeights.speedWeights[1])
-          },
-          new float [] {
-            Random.Range(minStat.encounterWeights.sizeWeights[0], maxStat.encounterWeights.sizeWeights[0]),
-            Random.Range(minStat.encounterWeights.sizeWeights[1], maxStat.encounterWeights.sizeWeights[1])
-          }
-        ),
-        new(3, new int[] {18, 12})
+        // new EncounterDecisionWeights(
+        //   new float[] {
+        //     Random.Range(minStat.encounterWeights.speedWeights[0], maxStat.encounterWeights.speedWeights[0]),
+        //     Random.Range(minStat.encounterWeights.speedWeights[1], maxStat.encounterWeights.speedWeights[1])
+        //   },
+        //   new float [] {
+        //     Random.Range(minStat.encounterWeights.sizeWeights[0], maxStat.encounterWeights.sizeWeights[0]),
+        //     Random.Range(minStat.encounterWeights.sizeWeights[1], maxStat.encounterWeights.sizeWeights[1])
+        //   }
+        // ),
+        new(4, new int[] {4})
       );
 
       Color color = Color.HSVToRGB(Random.Range(0f,1),Random.Range(.40f,1),Random.Range(.5f, 1));

@@ -143,7 +143,8 @@ public class GameManager : MonoBehaviour
             Random.Range(minStat.encounterWeights.sizeWeights[0], maxStat.encounterWeights.sizeWeights[0]),
             Random.Range(minStat.encounterWeights.sizeWeights[1], maxStat.encounterWeights.sizeWeights[1])
           }
-        )
+        ),
+        new(3, new int[] {18, 12})
       );
 
       Color color = Color.HSVToRGB(Random.Range(0f,1),Random.Range(.40f,1),Random.Range(.5f, 1));

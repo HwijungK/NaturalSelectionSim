@@ -49,7 +49,7 @@ public class Logger : MonoBehaviour
     {
         if (Time.time > _nextLogTime)
         {
-            print(_nextLogTime);
+            //print(_nextLogTime);
             LogToFile();
             _nextLogTime += timeBetweenLogs;
         }

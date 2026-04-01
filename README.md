@@ -59,13 +59,16 @@ The simulations were run with the settings below for ___ minutes (___ in simulat
 Initially
 
 
-<img src="Analysis/graphs/Histogram_Creature_Size_Through_Simulation.png" alt= "XX" width = 49% />
-<img src="Analysis/graphs/Population_Through_Time.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Population_By_Role_Through_Time.png" alt= "XX" width = 49% />
+<img src="Analysis/graphs/Histogram_Creature_Size_Through_Simulation.png" alt= "XX" width = 100% />
+
+<!-- <img src="Analysis/graphs/Population_Through_Time.png" alt= "XX" width = 49% /> -->
+<img src="Analysis/graphs/Population_By_Role_Through_Time.png" alt= "XX" />
+<img src = "Analysis/graphs/NPP_Over_Time.png" alt = "XX" />
 
 
 <img src="Analysis/graphs/Spawn_Distance_Over_Time.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Speed_Over_Time.png" alt= "XX" width = 49% />
 <img src="Analysis/graphs/Split_Threshold_Over_Time.png" alt = "XX" width = 49% />
-<img src="Analysis/graphs/Detection_Range_Over_Time.png" alt= "XX" />
+<img src="Analysis/graphs/Detection_Range_Over_Time.png" alt= "XX" width = 49%/>
 
 <img src="Analysis/graphs/Consumer_Curve.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Mean_Detection_Range_Across_Speed_and_Size.png" alt= "XX" width = 49% />
 <img src="Analysis/graphs/Mean_Spawn_Distance_Across_Speed_and_Size.png" alt= "XX" width = 49% />

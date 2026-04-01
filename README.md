@@ -54,31 +54,29 @@ The magnitude of mutation in all inheritable traits comes from a gaussian-esque 
 # Analysis
 
 The simulations were run with the settings below for ___ minutes (___ in simulation time).
-<img width="1224" height="1472" alt="image" src="https://github.com/user-attachments/assets/2f15ae6b-5e03-4c73-be7f-88b91a4deee0" width = 400px/>
+<img width= 50% alt="image" src="https://github.com/user-attachments/assets/2f15ae6b-5e03-4c73-be7f-88b91a4deee0" width = 49%/>
 
 Initially
 
 
-<img src="Analysis/graphs/Consumer_Curve.png" alt= "XX" width = 400px />
+<img src="Analysis/graphs/Histogram_Creature_Size_Through_Simulation.png" alt= "XX" width = 49% />
+<img src="Analysis/graphs/Population_Through_Time.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Population_By_Role_Through_Time.png" alt= "XX" width = 49% />
+
+
+<img src="Analysis/graphs/Spawn_Distance_Over_Time.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Speed_Over_Time.png" alt= "XX" width = 49% />
+<img src="Analysis/graphs/Split_Threshold_Over_Time.png" alt = "XX" width = 49% />
 <img src="Analysis/graphs/Detection_Range_Over_Time.png" alt= "XX" />
-<img src="Analysis/graphs/Histogram_Creature_Size_Through_Simulation.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Mean_Detection_Range_Across_Speed_and_Size.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Mean_Spawn_Distance_Across_Speed_and_Size.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Mean_Split_Threshold_Across_Speed_and_Size.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Population_By_Role_Through_Time.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Population_Through_Time.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Spawn_Distance_Over_Time.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Speed_Over_Time.png" alt= "XX" width = 400px />
-<img src="Analysis/graphs/Split_Threshold_Over_Time.png" alt = "XX" width = 400px />
 
-
+<img src="Analysis/graphs/Consumer_Curve.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Mean_Detection_Range_Across_Speed_and_Size.png" alt= "XX" width = 49% />
+<img src="Analysis/graphs/Mean_Spawn_Distance_Across_Speed_and_Size.png" alt= "XX" width = 49% />
+<img src="Analysis/graphs/Mean_Split_Threshold_Across_Speed_and_Size.png" alt= "XX" width = 49% />
 
 
 
 
 <!--
-<img src="Analysis/plot.png" alt="Static Plot" width=400px />
-<img src="Analysis/plot_speed_size_sped" alt="Fast_Time_graph" width=400px />
+<img src="Analysis/plot.png" alt="Static Plot" width=49% />
+<img src="Analysis/plot_speed_size_sped" alt="Fast_Time_graph" width=49% />
 
 <video width="320" height="240" controls>
   <source src="" type="data_1_18_620.mp4">

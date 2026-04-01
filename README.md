@@ -1,12 +1,13 @@
-# NaturalSelectionSim
+<img width="1224" height="1472" alt="image" src="https://github.com/user-attachments/assets/5eda5c84-202c-4bec-929f-461c12d079f1" /># NaturalSelectionSim
 ---
 Simulating natural selection and speciation
 !["Colonies of small creatures developing"](/Screenshots/small_cultures.png)
+!["Emergence of massive creatures in favorable settings"](/Screenshots/passive_gigantism.png)
 
 # Table of Contents
 1. Introduction
 2. Overview
-3. Some Case Studies
+3. Analysis
 
 # Introduction
 
@@ -23,9 +24,9 @@ A creature has a set size and speed. When a creature is a certain amount larger 
 ### Representing Resources
 In real life, organisms require energy, which they mainly get through photosynthesizing (autotrophs) or by consuming other organisms (heterotrophs). They also need a source of carbon. In this simulation, the only resource creatures use is "energy," which mimics both material and energy in real life.
 
-Every organism passively generates a small amount of energy, representing photosynthesis. However, the amount of passive energy generation decreases as the population of creatures increases, reflecting the finite amount of resources in an environment.
+Every organism passively generates a small amount of energy, representing photosynthesis. However, the amount of passive energy generation decreases as the population of creatures increases, reflecting the finite amount of material resources in an environment.
 
-$ms^2+Km^.75$ represents the rate at which a creature uses energy, where m is the size, s is the speed, and k is a constant. $ms^2$ mirrors the equation of kinetic energy, the energy it takes for the creature to move. $Km^.75$ reflects _Kleiber's Law_. Kleiber's Law observes that the metabolic rate of a creature increases with its size, but bigger creatures use less energy per mass.
+$ms^2+Km^.75$ represents the rate at which a creature uses energy, where m is the size, s is the speed, and k is an arbitrary constant. $ms^2$ mirrors the equation of kinetic energy, the energy it takes for the creature to move. $Km^.75$ reflects _Kleiber's Law_. Kleiber's Law observes that the metabolic rate of a creature increases with its size, but bigger creatures use less energy per mass.
 
 $$\Delta E = G_{autogen} (\frac {N_{max}-n}{N_{max}}) - (ms^2+Km^.75)$$
 
@@ -33,20 +34,49 @@ If a creature is energy positive, it has a positive $\Delta E$. If a creature is
 
 ### Behaviour
 
-Creatures don't inherently know to chase after smaller creatures or run from larger ones. Instead, their behaviour comes from a very simple neural network.
+Creatures don't inherently know to chase after smaller creatures or run from larger ones. Instead, their behaviour comes from a neural network
 
-Each creature is aware of its size and speed, as well as the size and speed of other creatures inside its detect radius. The creature has a weight (between -1 and 1) for each of these values, and computes its response for each of its neighboring creatures. A negative number indicates an intent to move away from the neighbor, while a positive number indicates an intent to move towards it. This value is scaled inversely by the distance between the creatures. The intent of all neighboring creatures are summed up to determine the direction a creature will move in.
+For each neighbor in a `detectRange`, a creature observes its neighbors color, size and speed, along with the direction it is moving and the distance between them. It also considers its own energy value and the direction it is currently moving in. With these 7 inputs, the neural network goes through several hidden layers (The section below uses the setting: 3 hidden layers of 6 nodes each) and produces a number between -1 and 1, which reflect the creatures intent to move towards or away from the neighbor. The intent for each neighbor is turned into a vector and summed together, with the magnitude of the vector being clamped from 0.5 to 1.
 
-### Reproduction
+Initially, each weight and bias is set to a random number. Creatures that have higher fitness will produce more similar offspring, which 'trains' the neural network.
 
-When a creature reaches a certain amount of energy, `spawnThreshold`, it will reproduce. Creatures in this simulation can only reproduce asexually. To do so, a creature gives \~half of its energy to its offspring. All physical and behavioural traits of an offspring derive from its parent and is mutated by a certain amount.
+### Reproduction and Mutation
 
-#### Physical Traits
-1. Speed
-2. Size
-3. Detect Range - a creature takes into account all other creatures inside its detect range when deciding how to move
-4. Split Threshold - When a creature's energy reaches its split threshold, it will reproduce
-5. Spawn Distance - the offspring of a creature spawns some distance away from the parent
+When a creature reaches a certain amount of energy, the `spawnThreshold`, it will reproduce. Creatures in this simulation can only reproduce asexually.
+A parent will spawn an offspring `spawnDist` units away from its position. spawning offspring in a furthur away location reduces competition between the parent and offspring, but has a associated cost in energy.
+After reproducing, the parent and offspring will both have a energy value of $\frac {OriginalEnergy} {2} - energyPerSpawnDistance * spawnDistance - splitBaseCost /2$
+
+A newly spawned creature should not be able to immediately reproduce. Creatures have a buffer time from creation where they cannot gain energy by consuming other creatures. Without this mechanic would spawn on top of creatures and consume them, instantly reproducing in a recursive cycle.
+
+The magnitude of mutation in all inheritable traits comes from a gaussian-esque curve, where most traits remain similar between the offspring and parents, through drastic changes do appear on occasions.
+<img width="522" height="355" alt="image" src="https://github.com/user-attachments/assets/6c226f1e-6bb7-4b29-b288-71b0564a1c66" />
+
+# Analysis
+
+The simulations were run with the settings below for ___ minutes (___ in simulation time).
+<img width="1224" height="1472" alt="image" src="https://github.com/user-attachments/assets/2f15ae6b-5e03-4c73-be7f-88b91a4deee0" />
+
+Initially
+
+<img src="Analysis/graphs/Consumer_Curve.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Detection_Range_Over_Time.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Histogram_Creature_Size_Through_Simulation.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Mean_Detection_Range_Across_Speed_and_Size.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Mean_Spawn_Distance_Across_Speed_and_Size.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Mean_Split_Threshold_Across_Speed_and_Size.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Population_By_Role_Through_Time.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Population_Through_Time.png alt= "XX" width = 400px />
+<img src="Analysis/graphsSpawn_Distance_Over_Time.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/Speed_Over_Time.png alt= "XX" width = 400px />
+<img src="Analysis/graphs/.png alt= "Split_Threshold_Over_Time.png" alt = "XX width = 400px />
+
+
+
+
+
+
+
+
 
 <!--
 <img src="Analysis/plot.png" alt="Static Plot" width=400px />

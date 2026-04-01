@@ -13,6 +13,11 @@ public class GameManager : MonoBehaviour
   [Header("global settings")]
   public float creatureDecisionRefreshTime;
   public float width, height;
+
+  [Header ("Mutation Equation Parameters")]
+  public float k;
+  public float r;
+  public float b; // transform up
   [Range (0.01f, 0.20f)]
   public float mutationRange;
   [Tooltip("Increase or decrease the mutation of the color of creatures")]
@@ -26,6 +31,7 @@ public class GameManager : MonoBehaviour
   public float homeostasisConstant = .7f;
   public int maxSupportedLife = 5000;
   public float minSizeLimit = 0.5f;
+  public float minDetectRangeLimit = 4f;
   [Range(0, 2)]
   public float transformSizePower = .8f;
   public float energyPerSpawnDst = 100;
@@ -36,11 +42,13 @@ public class GameManager : MonoBehaviour
   [Range(0f, 1f)]
   public float energyConsumptionTransferRate = 0.5f;
   public float growShrinkTime = 5f;
+  public float splitBaseCost = 100;
   public float prettyShrinkSizeThresh = 2f;
 
   [Header("Starting Population")]
   public int startingPopulationSize = 5;
   public float originalCreatureStartingEnergy = 1000;
+  public int[] hiddenLayers = new int[]{4};
   public CreatureStat minStat;
   public CreatureStat maxStat;
 
@@ -115,12 +123,12 @@ public class GameManager : MonoBehaviour
       spawnPosition = (Vector2) parent.transform.position + dir * parent.stat.spawnDist;
     }
     while (!(0 < spawnPosition.x && spawnPosition.x < width && 0 < spawnPosition.y && spawnPosition.y < height) && _attemptsToSpawn < 500);
-    if (_attemptsToSpawn >= 500)
+    if (_attemptsToSpawn >= 100)
     {
       Debug.LogError("Parent is out of bounds as cannot spawn Offsprint");
     }
 
-    float startingEnergy = (parent.energy/ 2) - energyPerSpawnDst * parent.stat.spawnDist;
+    float startingEnergy = (parent.energy/ 2) - energyPerSpawnDst * parent.stat.spawnDist - splitBaseCost / 2;
     parent.energy = startingEnergy;
     
     return SpawnCreature(childStat, spawnPosition, startingEnergy, childColor);
@@ -146,12 +154,36 @@ public class GameManager : MonoBehaviour
         //     Random.Range(minStat.encounterWeights.sizeWeights[1], maxStat.encounterWeights.sizeWeights[1])
         //   }
         // ),
-        new(4, new int[] {4})
+        new(12, hiddenLayers)
       );
 
       Color color = Color.HSVToRGB(Random.Range(0f,1),Random.Range(.40f,1),Random.Range(.5f, 1));
       Vector2 position = new Vector2(Random.Range(0, width), Random.Range(0, height));
       SpawnCreature(stat, position, originalCreatureStartingEnergy, color);
+    }
+  }
+
+  /// <summary>
+  /// Mutates a value based on a gauessianesque function and clamps to a min max value
+  /// </summary>
+  /// <param name="n">Current value</param>
+  /// <param name="min"></param>
+  /// <param name="max"></param>
+  /// <returns></returns>
+  public float MutateNumber(float n, float delta, float min, float max)
+  {
+    float rValue = UnityEngine.Random.Range(0f, 1f);
+    float gValue = Mathf.Pow((float) System.Math.E, -Mathf.Pow(rValue, k) / r) * (1-b) + b;
+    gValue = UnityEngine.Random.Range(0f, 1f) < 0.5f ? gValue : -gValue;
+
+    return Mathf.Clamp(n + (delta * gValue), min, max);
+  }
+  [ContextMenu("Test")]
+  public void test()
+  {
+    for (int i = 0; i < 100; i++)
+    {
+      print(MutateNumber(.01f, 5, -100, 100));
     }
   }
 

@@ -149,52 +149,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
-  creatureDecisionRefreshTime: 8
-  width: 320
-  height: 180
+  creatureDecisionRefreshTime: 1.5
+  width: 240
+  height: 135
+  k: 1.55
+  r: 0.1
+  b: 0.05
   mutationRange: 0.137
-  colorMutationMultiplier: 0.5
-  timeScale: 92.6
-  energyAutoGenRate: 5
-  homeostasisConstant: 0.8
-  maxSupportedLife: 8000
-  minSizeLimit: 1
-  transformSizePower: 0.5
-  energyPerSpawnDst: 100
-  energyPerMassConversion: 250
-  spawnFeedingGracePeriod: 20
-  sizeThresholdToEat: 1.25
+  colorMutationMultiplier: 0.4
+  timeScale: 50
+  energyAutoGenRate: 8
+  homeostasisConstant: 3
+  maxSupportedLife: 3000
+  minSizeLimit: 1.5
+  minDetectRangeLimit: 4
+  transformSizePower: 0.6
+  energyPerSpawnDst: 50
+  energyPerMassConversion: 3000
+  spawnFeedingGracePeriod: 150
+  sizeThresholdToEat: 1.15
   eatBaseReward: 0
+  energyConsumptionTransferRate: 0.75
   growShrinkTime: 5
+  splitBaseCost: 500
   prettyShrinkSizeThresh: 2
-  startingPopulationSize: 300
+  startingPopulationSize: 800
   originalCreatureStartingEnergy: 700
+  hiddenLayers: 060000000600000006000000
   minStat:
     speed: 0.01
     detectRange: 4
     size: 0.1
     splitThresh: 500
-    spawnDist: 3
-    encounterWeights:
-      speedWeights:
-      - -1
-      - -1
-      sizeWeights:
-      - -1
-      - -1
+    spawnDist: 5
   maxStat:
     speed: 3.5
-    detectRange: 20
+    detectRange: 15
     size: 6
-    splitThresh: 7000
+    splitThresh: 5000
     spawnDist: 9
-    encounterWeights:
-      speedWeights:
-      - 1
-      - 1
-      sizeWeights:
-      - 1
-      - 1
   showGizmos: 0
   creatures: []
 --- !u!4 &302897978
@@ -473,13 +466,6 @@ MonoBehaviour:
     size: 2
     splitThresh: 0
     spawnDist: 0
-    encounterWeights:
-      speedWeights:
-      - 2
-      - -1
-      sizeWeights:
-      - 0.1
-      - 0
   showGizmos: 0
   logNeighbors: 0
 --- !u!58 &1188709852
@@ -618,9 +604,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: Code/Unity_Projects/NaturalSelectionSim/Data
-  fileName: data_3_24
+  fileName: data_4_1
   overwriteFile: 1
-  timeBetweenLogs: 100
+  timeBetweenLogs: 500
 --- !u!4 &1786506891
 Transform:
   m_ObjectHideFlags: 0
@@ -676,13 +662,6 @@ MonoBehaviour:
     size: 2
     splitThresh: 0
     spawnDist: 0
-    encounterWeights:
-      speedWeights:
-      - 0
-      - 0
-      sizeWeights:
-      - 0.1
-      - 0
   showGizmos: 0
   logNeighbors: 0
 --- !u!58 &1889755369

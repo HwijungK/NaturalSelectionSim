@@ -40,7 +40,7 @@ public class Logger : MonoBehaviour
             Debug.Log("Writing To File: " + _fullPath);
             using (StreamWriter outputFile = new StreamWriter(_fullPath))
             {
-                outputFile.WriteLine("time, x,y,speed, detectRange, size, splitThresh, spawnDist, speedCoef, speedConst, sizeCoef, sizeConst, autoGen, energyConsumption, color");
+                outputFile.WriteLine("time, x,y,speed, detectRange, size, splitThresh, spawnDist, autoGen, energyConsumption, color");
             }
         }
     }

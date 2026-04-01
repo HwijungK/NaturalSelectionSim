@@ -12,6 +12,7 @@ using UnityEditor.Rendering;
 using UnityEditor.SceneManagement;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 // [RequireComponent(typeof (Collider2D))]
 public class Creature : MonoBehaviour
@@ -77,11 +78,17 @@ public class Creature : MonoBehaviour
         {
             lastDecisionTime = Time.time;
             Creature[] neighbors = DetectNearCreatures();
-            (Vector2 dir, float percentMaxSpeed) = stat.nNet.Predict(this, neighbors.ToList());
-            velocity = dir * percentMaxSpeed * stat.speed;
 
-            readOnlySpeedPer = velocity.magnitude;
+            if (neighbors.Length != 0)
+            {
+                Vector2 response = stat.nNet.Predict(this, neighbors.ToList());
+                velocity = response * stat.speed;
+
+                readOnlySpeedPer = response.magnitude;
+            }
+            
         }
+
         // Move Creature
         if (transform.position.x + transform.localScale.x / 2 < 0)
         {
@@ -243,7 +250,18 @@ public class Creature : MonoBehaviour
             Gizmos.DrawWireSphere(transform.position, stat.detectRange);
 
             Gizmos.color = UnityEngine.Color.red;
-            Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + velocity.normalized * stat.detectRange * readOnlySpeedPer);
+            
+            Creature[] neighbors = DetectNearCreatures();
+
+            if (neighbors.Length != 0)
+            {
+                Vector2 response = stat.nNet.Predict(this, neighbors.ToList());
+                Vector2 v = response * stat.speed;
+                
+                Gizmos.DrawLine((Vector2) transform.position, (Vector2) transform.position + v.normalized * stat.detectRange * readOnlySpeedPer);
+            }
+
+            
         }
   }
 }
@@ -281,11 +299,11 @@ public struct CreatureStat
     public CreatureStat Mutate(float mutationPercent)
     {
         return new CreatureStat(
-            speed * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
-            detectRange * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
-            size * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
-            splitThresh * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
-            spawnDist * (1 + mutationPercent * UnityEngine.Random.Range(-1f, 1f)),
+            GameManager.instance.MutateNumber(speed, .7f, 0.1f, 50),
+            GameManager.instance.MutateNumber(detectRange, 2.5f, GameManager.instance.minDetectRangeLimit, 50),
+            GameManager.instance.MutateNumber(size, 2.5f, GameManager.instance.minSizeLimit, 1000),
+            GameManager.instance.MutateNumber(splitThresh, 300, 0, 1000000),
+            GameManager.instance.MutateNumber(spawnDist, 3, 0, 1000000),
             // encounterWeights.Mutate(mutationPercent),
             new NNet(nNet, mutationPercent)
         );

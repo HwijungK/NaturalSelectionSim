@@ -53,7 +53,7 @@ The magnitude of mutation in all inheritable traits comes from a gaussian-esque 
 
 # Analysis
 
-<a href="https://www.youtube.com/watch?v=PzugDMRM9Jc" target="_blank">Simulation Video (WARNING: may contain rapid visual patterns<a>
+<a href="https://www.youtube.com/watch?v=M0sHzI2oGuQ" target="_blank">Simulation Video (WARNING: may contain rapid visual patterns<a>
 
 The simulations were run with the settings below for 50 minutes;
 

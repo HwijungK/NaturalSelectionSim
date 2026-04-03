@@ -55,12 +55,11 @@ The magnitude of mutation in all inheritable traits comes from a gaussian-esque 
 
 <a href="https://www.youtube.com/watch?v=M0sHzI2oGuQ" target="_blank">Simulation Video (WARNING: may contain rapid visual patterns<a>
 
-The simulations were run with the settings below for 50 minutes;
+The simulations were run with the settings below for 50 minutes.
 
 <img width= 50% alt="image" src="https://github.com/user-attachments/assets/2f15ae6b-5e03-4c73-be7f-88b91a4deee0" width = 49%/>
 
-
-
+The most reliable tactic seemed to be avoiding all other creatures, being energy positive, and passively gaining energy to reproduce. Even though creatures could relatively easily evolve to have the physical traits of a consumer, it was much harder for them to learn the correct behaviour. The main problem that had to be overcome was prioritizing the closest creature so that it wasn't being pulled in opposing directions. Another challenge for predators was learning to avoid other predators. Many failed at this, creating territorial predators that limited their population even when ample prey were available.
 
 <img src="Analysis/graphs/Histogram_Creature_Size_Through_Simulation.png" alt= "XX" width = 100% />
 
@@ -68,10 +67,18 @@ The simulations were run with the settings below for 50 minutes;
 <img src="Analysis/graphs/Population_By_Role_Through_Time.png" alt= "XX" />
 <img src = "Analysis/graphs/NPP_Over_Time.png" alt = "XX" />
 
+Nevertheless, successful populations of consumers arose, driving consumer populations to the brink of extinction near 12:00 and again near 33:00 (though less so). However, reducing the producer population to such levels was unsustainable for the consumers and drove them to extinction, causing a resurgence in producer populations. This cycle seems to happen ~1000 seconds, with smaller fluctuations happening in between. 
+
+
 
 <img src="Analysis/graphs/Spawn_Distance_Over_Time.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Speed_Over_Time.png" alt= "XX" width = 49% />
 <img src="Analysis/graphs/Split_Threshold_Over_Time.png" alt = "XX" width = 49% />
 <img src="Analysis/graphs/Detection_Range_Over_Time.png" alt= "XX" width = 49%/>
+
+Producer populations found a stable configuration almost immediately and did not fluctuate over time. The one exception is the increase in their detect radius when their numbers were threatened by the consumers.
+In contrast, the ideal traits of consumers seem to depend heavily on the state of the community. Speed, split threshold, and spawn distance seemed to increase as prey populations decreased, suggesting that predators who spent more energy on chasing down prey and spawning offspring further away were more fit when prey were plentiful. However, when food was scarce, the ecosystem couldn't support energy-intensive predators, giving predators that conserved energy a fitness advantage.
+
+
 
 <img src="Analysis/graphs/Consumer_Curve.png" alt= "XX" width = 49% /> <img src="Analysis/graphs/Mean_Detection_Range_Across_Speed_and_Size.png" alt= "XX" width = 49% />
 <img src="Analysis/graphs/Mean_Spawn_Distance_Across_Speed_and_Size.png" alt= "XX" width = 49% />
@@ -90,4 +97,5 @@ The simulations were run with the settings below for 50 minutes;
 </video>
 
 https://github.com/user-attachments/assets/3407ade9-2931-4192-b5f9-a9b38d8927f8
+
 

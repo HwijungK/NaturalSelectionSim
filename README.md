@@ -1,8 +1,8 @@
 ---
 # Simulating Natural Selection in Physical Traits and Neural Network-Based Behavior in Ecosystem
 
-!["Colonies of small creatures developing"](/img/small_cultures.png)
-!["Emergence of massive creatures in favorable settings"](/img/passive_gigantism.png)
+<img src="img/small_cultures.png" alt="colonies of small creatures developing" style="display: block; width: 49%; height: 100%" /> <img src="img/passive_gigantism.png" alt="Emergence of massive creatures in favorable settings" style="display: block; width: 49%" />
+
 
 # Table of Contents
 [1. Introduction](#Introduction)

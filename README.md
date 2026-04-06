@@ -1,9 +1,9 @@
 ---
 # Simulating Natural Selection in Physical Traits and Neural Network-Based Behavior in Ecosystem
 
-<div style="width:100px; height:250px; overflow:hidden;">
-  <img src="img/small_cultures.png" style="width:49%; height:100%; object-fit:cover;">
-  <img src="img/passive_gigantism.png" style="width:49%; height:100%; object-fit:cover; object-position:center;">
+<div style="width:100px; height:100px; overflow:hidden;">
+  <img src="img/small_cultures.png" style="width:100%; height:100%; object-fit:cover;">
+  <img src="img/passive_gigantism.png" style="width:100%; height:100%; object-fit:cover; object-position:center;">
 </div>
 
 

@@ -150,24 +150,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creaturePrefab: {fileID: 5131673850268230944, guid: d9aa232f110504517808235d8afd8675, type: 3}
   creatureDecisionRefreshTime: 1.5
-  width: 240
-  height: 135
+  width: 480
+  height: 270
   k: 1.55
   r: 0.1
   b: 0.05
   mutationRange: 0.137
   colorMutationMultiplier: 0.4
-  timeScale: 50
+  timeScale: 10
   energyAutoGenRate: 8
-  homeostasisConstant: 3
-  maxSupportedLife: 3000
+  homeostasisConstant: 1
+  maxSupportedLife: 8000
   minSizeLimit: 1.5
   minDetectRangeLimit: 4
   transformSizePower: 0.6
   energyPerSpawnDst: 50
-  energyPerMassConversion: 3000
+  energyPerMassConversion: 1000
   spawnFeedingGracePeriod: 150
-  sizeThresholdToEat: 1.15
+  sizeThresholdToEat: 2
   eatBaseReward: 0
   energyConsumptionTransferRate: 0.75
   growShrinkTime: 5

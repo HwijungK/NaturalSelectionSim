@@ -1,13 +1,19 @@
 ---
 # Simulating Natural Selection in Physical Traits and Neural Network-Based Behavior in Ecosystem
 
-<img src="img/small_cultures.png" alt="colonies of small creatures developing" style="display: block; width: 49%; height: 100%" /> <img src="img/passive_gigantism.png" alt="Emergence of massive creatures in favorable settings" style="display: block; width: 49%" />
+<div style="width:100px; height:250px; overflow:hidden;">
+  <img src="img/small_cultures.png" style="width:49%; height:100%; object-fit:cover;">
+  <img src="img/passive_gigantism.png" style="width:49%; height:100%; object-fit:cover; object-position:center;">
+</div>
 
 
 # Table of Contents
 [1. Introduction](#Introduction)
+
 [2. Overview](#Overview)
+
 [3. Analysis](#Analysis)
+
 [4. Afterwards](#Afterwards)
 
 # Introduction
